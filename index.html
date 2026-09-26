@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LUNA System - Laboratory User Navigation Assistant</title>
+
+  <!-- ===================================================================
+       1. SETTINGS - EDIT THIS BLOCK ONLY
+       =================================================================== -->
+  <script>
+    window.LUNA_CONFIG = {
+      // Paste your Firebase web-app config here
+      // (Firebase Console -> Project settings -> Your apps -> Web app -> Config)
+      firebaseConfig: {
+        apiKey: "AIzaSyA-8GV3Jz2g8d47yIwQ4I_O4kTVtBsnkOo",
+        authDomain: "luna-laboratory-assistance.firebaseapp.com",
+        projectId: "luna-laboratory-assistance",
+        storageBucket: "luna-laboratory-assistance.firebasestorage.app",
+        messagingSenderId: "2814500942",
+        appId: "1:2814500942:web:1420a8084caf0faff0e31f"
+      },
+
+      // Name of the data "folder" inside Firestore (any name you like)
+      appId: "luna-app",
+
+      // Built-in system administrator login (change these!)
+      SYSTEM_ADMIN_USER: "labadmin",
+      SYSTEM_ADMIN_PASS: "Luna#Lab2026!"
+    };
+  </script>
+
+  <!-- Show any startup error on screen instead of a blank page -->
+  <script>
+    window.__lunaShowError = function (title, msg) {
+      var root = document.getElementById('root');
+      if (!root) return;
+      root.innerHTML = '<div style="font-family:system-ui,sans-serif;max-width:600px;margin:10vh auto;padding:24px;border:1px solid #fecaca;background:#fef2f2;border-radius:12px;color:#7f1d1d">' +
+        '<h2 style="margin:0 0 8px;font-size:20px"></h2>' +
+        '<p style="margin:0 0 8px;font-size:14px;white-space:pre-wrap;line-height:1.5"></p>' +
+        '<p style="margin:0;font-size:13px;color:#991b1b">Open the browser console (F12) for details.</p></div>';
+      root.querySelector('h2').textContent = title;
+      root.querySelector('p').textContent = msg;
+    };
+    window.addEventListener('error', function (e) {
+      if (!window.__lunaMounted) window.__lunaShowError('LUNA could not start', e.message || 'Unknown error');
+    });
+  </script>
+
+  <!-- Styles (pre-built Tailwind CSS, no runtime compiler needed) -->
+  <style>
+*,:after,:before{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgba(59,130,246,.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgba(59,130,246,.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/*! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com*/*,:after,:before{box-sizing:border-box;border:0 solid #e5e7eb}:after,:before{--tw-content:""}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;-o-tab-size:4;tab-size:4;font-family:ui-sans-serif,system-ui,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0}fieldset,legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::-moz-placeholder,textarea::-moz-placeholder{opacity:1;color:#9ca3af}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.pointer-events-none{pointer-events:none}.static{position:static}.fixed{position:fixed}.absolute{position:absolute}.relative{position:relative}.inset-y-0{top:0;bottom:0}.bottom-4{bottom:1rem}.left-0{left:0}.left-1\/2{left:50%}.right-4{right:1rem}.top-4{top:1rem}.z-10{z-index:10}.z-50{z-index:50}.col-span-full{grid-column:1/-1}.mx-1{margin-left:.25rem;margin-right:.25rem}.mx-auto{margin-left:auto;margin-right:auto}.mb-1{margin-bottom:.25rem}.mb-2{margin-bottom:.5rem}.mb-3{margin-bottom:.75rem}.mb-4{margin-bottom:1rem}.mb-6{margin-bottom:1.5rem}.mb-8{margin-bottom:2rem}.ml-2{margin-left:.5rem}.ml-4{margin-left:1rem}.mr-2{margin-right:.5rem}.mr-4{margin-right:1rem}.mt-1{margin-top:.25rem}.mt-2{margin-top:.5rem}.mt-4{margin-top:1rem}.mt-8{margin-top:2rem}.block{display:block}.inline-block{display:inline-block}.flex{display:flex}.inline-flex{display:inline-flex}.table{display:table}.grid{display:grid}.hidden{display:none}.h-12{height:3rem}.h-16{height:4rem}.h-20{height:5rem}.h-5{height:1.25rem}.h-8{height:2rem}.h-full{height:100%}.h-screen{height:100vh}.min-h-screen{min-height:100vh}.w-12{width:3rem}.w-16{width:4rem}.w-20{width:5rem}.w-24{width:6rem}.w-5{width:1.25rem}.w-64{width:16rem}.w-8{width:2rem}.w-\[92\%\]{width:92%}.w-full{width:100%}.min-w-full{min-width:100%}.max-w-2xl{max-width:42rem}.max-w-7xl{max-width:80rem}.max-w-md{max-width:28rem}.max-w-sm{max-width:24rem}.max-w-xl{max-width:36rem}.flex-1{flex:1 1 0%}.flex-shrink-0{flex-shrink:0}.-translate-x-1\/2{--tw-translate-x:-50%}.-translate-x-1\/2,.-translate-y-1\/2{transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.-translate-y-1\/2{--tw-translate-y:-50%}@keyframes spin{to{transform:rotate(1turn)}}.animate-spin{animation:spin 1s linear infinite}.cursor-pointer{cursor:pointer}.grid-cols-1{grid-template-columns:repeat(1,minmax(0,1fr))}.flex-row{flex-direction:row}.flex-col{flex-direction:column}.content-start{align-content:flex-start}.items-start{align-items:flex-start}.items-end{align-items:flex-end}.items-center{align-items:center}.justify-end{justify-content:flex-end}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-2{gap:.5rem}.gap-3{gap:.75rem}.gap-4{gap:1rem}.gap-6{gap:1.5rem}.gap-8{gap:2rem}.space-x-2>:not([hidden])~:not([hidden]){--tw-space-x-reverse:0;margin-right:calc(.5rem*var(--tw-space-x-reverse));margin-left:calc(.5rem*(1 - var(--tw-space-x-reverse)))}.space-x-3>:not([hidden])~:not([hidden]){--tw-space-x-reverse:0;margin-right:calc(.75rem*var(--tw-space-x-reverse));margin-left:calc(.75rem*(1 - var(--tw-space-x-reverse)))}.space-x-4>:not([hidden])~:not([hidden]){--tw-space-x-reverse:0;margin-right:calc(1rem*var(--tw-space-x-reverse));margin-left:calc(1rem*(1 - var(--tw-space-x-reverse)))}.space-y-1>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(.25rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(.25rem*var(--tw-space-y-reverse))}.space-y-4>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem*var(--tw-space-y-reverse))}.space-y-5>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1.25rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1.25rem*var(--tw-space-y-reverse))}.space-y-6>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1.5rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1.5rem*var(--tw-space-y-reverse))}.space-y-8>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(2rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(2rem*var(--tw-space-y-reverse))}.divide-y>:not([hidden])~:not([hidden]){--tw-divide-y-reverse:0;border-top-width:calc(1px*(1 - var(--tw-divide-y-reverse)));border-bottom-width:calc(1px*var(--tw-divide-y-reverse))}.divide-gray-200>:not([hidden])~:not([hidden]){--tw-divide-opacity:1;border-color:rgb(229 231 235/var(--tw-divide-opacity,1))}.overflow-hidden{overflow:hidden}.overflow-x-auto{overflow-x:auto}.overflow-y-auto{overflow-y:auto}.overflow-x-hidden{overflow-x:hidden}.whitespace-nowrap{white-space:nowrap}.rounded{border-radius:.25rem}.rounded-2xl{border-radius:1rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:.5rem}.rounded-md{border-radius:.375rem}.rounded-xl{border-radius:.75rem}.border{border-width:1px}.border-2{border-width:2px}.border-b{border-bottom-width:1px}.border-b-2{border-bottom-width:2px}.border-l-4{border-left-width:4px}.border-t{border-top-width:1px}.border-dashed{border-style:dashed}.border-none{border-style:none}.border-emerald-100{--tw-border-opacity:1;border-color:rgb(209 250 229/var(--tw-border-opacity,1))}.border-emerald-200{--tw-border-opacity:1;border-color:rgb(167 243 208/var(--tw-border-opacity,1))}.border-gray-100{--tw-border-opacity:1;border-color:rgb(243 244 246/var(--tw-border-opacity,1))}.border-gray-200{--tw-border-opacity:1;border-color:rgb(229 231 235/var(--tw-border-opacity,1))}.border-gray-300{--tw-border-opacity:1;border-color:rgb(209 213 219/var(--tw-border-opacity,1))}.border-indigo-100{--tw-border-opacity:1;border-color:rgb(224 231 255/var(--tw-border-opacity,1))}.border-indigo-200{--tw-border-opacity:1;border-color:rgb(199 210 254/var(--tw-border-opacity,1))}.border-indigo-400{--tw-border-opacity:1;border-color:rgb(129 140 248/var(--tw-border-opacity,1))}.border-indigo-500{--tw-border-opacity:1;border-color:rgb(99 102 241/var(--tw-border-opacity,1))}.border-indigo-600{--tw-border-opacity:1;border-color:rgb(79 70 229/var(--tw-border-opacity,1))}.border-red-200{--tw-border-opacity:1;border-color:rgb(254 202 202/var(--tw-border-opacity,1))}.border-red-300{--tw-border-opacity:1;border-color:rgb(252 165 165/var(--tw-border-opacity,1))}.border-slate-800{--tw-border-opacity:1;border-color:rgb(30 41 59/var(--tw-border-opacity,1))}.bg-black{--tw-bg-opacity:1;background-color:rgb(0 0 0/var(--tw-bg-opacity,1))}.bg-blue-100{--tw-bg-opacity:1;background-color:rgb(219 234 254/var(--tw-bg-opacity,1))}.bg-blue-500{--tw-bg-opacity:1;background-color:rgb(59 130 246/var(--tw-bg-opacity,1))}.bg-emerald-100{--tw-bg-opacity:1;background-color:rgb(209 250 229/var(--tw-bg-opacity,1))}.bg-emerald-200{--tw-bg-opacity:1;background-color:rgb(167 243 208/var(--tw-bg-opacity,1))}.bg-emerald-50{--tw-bg-opacity:1;background-color:rgb(236 253 245/var(--tw-bg-opacity,1))}.bg-emerald-600{--tw-bg-opacity:1;background-color:rgb(5 150 105/var(--tw-bg-opacity,1))}.bg-gray-100{--tw-bg-opacity:1;background-color:rgb(243 244 246/var(--tw-bg-opacity,1))}.bg-gray-200{--tw-bg-opacity:1;background-color:rgb(229 231 235/var(--tw-bg-opacity,1))}.bg-gray-50{--tw-bg-opacity:1;background-color:rgb(249 250 251/var(--tw-bg-opacity,1))}.bg-gray-800{--tw-bg-opacity:1;background-color:rgb(31 41 55/var(--tw-bg-opacity,1))}.bg-green-100{--tw-bg-opacity:1;background-color:rgb(220 252 231/var(--tw-bg-opacity,1))}.bg-green-500{--tw-bg-opacity:1;background-color:rgb(34 197 94/var(--tw-bg-opacity,1))}.bg-green-600{--tw-bg-opacity:1;background-color:rgb(22 163 74/var(--tw-bg-opacity,1))}.bg-indigo-100{--tw-bg-opacity:1;background-color:rgb(224 231 255/var(--tw-bg-opacity,1))}.bg-indigo-200{--tw-bg-opacity:1;background-color:rgb(199 210 254/var(--tw-bg-opacity,1))}.bg-indigo-50{--tw-bg-opacity:1;background-color:rgb(238 242 255/var(--tw-bg-opacity,1))}.bg-indigo-500{--tw-bg-opacity:1;background-color:rgb(99 102 241/var(--tw-bg-opacity,1))}.bg-indigo-600{--tw-bg-opacity:1;background-color:rgb(79 70 229/var(--tw-bg-opacity,1))}.bg-orange-500{--tw-bg-opacity:1;background-color:rgb(249 115 22/var(--tw-bg-opacity,1))}.bg-red-100{--tw-bg-opacity:1;background-color:rgb(254 226 226/var(--tw-bg-opacity,1))}.bg-red-50{--tw-bg-opacity:1;background-color:rgb(254 242 242/var(--tw-bg-opacity,1))}.bg-red-500{--tw-bg-opacity:1;background-color:rgb(239 68 68/var(--tw-bg-opacity,1))}.bg-red-600{--tw-bg-opacity:1;background-color:rgb(220 38 38/var(--tw-bg-opacity,1))}.bg-slate-800{--tw-bg-opacity:1;background-color:rgb(30 41 59/var(--tw-bg-opacity,1))}.bg-slate-900{--tw-bg-opacity:1;background-color:rgb(15 23 42/var(--tw-bg-opacity,1))}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255/var(--tw-bg-opacity,1))}.bg-yellow-100{--tw-bg-opacity:1;background-color:rgb(254 249 195/var(--tw-bg-opacity,1))}.bg-gradient-to-br{background-image:linear-gradient(to bottom right,var(--tw-gradient-stops))}.from-indigo-50{--tw-gradient-from:#eef2ff var(--tw-gradient-from-position);--tw-gradient-to:rgba(238,242,255,0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to)}.to-blue-100{--tw-gradient-to:#dbeafe var(--tw-gradient-to-position)}.p-0{padding:0}.p-2{padding:.5rem}.p-3{padding:.75rem}.p-4{padding:1rem}.p-5{padding:1.25rem}.p-6{padding:1.5rem}.p-8{padding:2rem}.px-2{padding-left:.5rem;padding-right:.5rem}.px-3{padding-left:.75rem;padding-right:.75rem}.px-4{padding-left:1rem;padding-right:1rem}.px-6{padding-left:1.5rem;padding-right:1.5rem}.py-1{padding-top:.25rem;padding-bottom:.25rem}.py-1\.5{padding-top:.375rem;padding-bottom:.375rem}.py-10{padding-top:2.5rem;padding-bottom:2.5rem}.py-2{padding-top:.5rem;padding-bottom:.5rem}.py-2\.5{padding-top:.625rem;padding-bottom:.625rem}.py-3{padding-top:.75rem;padding-bottom:.75rem}.py-4{padding-top:1rem;padding-bottom:1rem}.py-8{padding-top:2rem;padding-bottom:2rem}.pb-2{padding-bottom:.5rem}.pb-4{padding-bottom:1rem}.pl-10{padding-left:2.5rem}.pl-3{padding-left:.75rem}.pr-2{padding-right:.5rem}.pt-2{padding-top:.5rem}.pt-4{padding-top:1rem}.pt-6{padding-top:1.5rem}.text-left{text-align:left}.text-center{text-align:center}.text-right{text-align:right}.font-mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace}.font-sans{font-family:ui-sans-serif,system-ui,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji}.text-2xl{font-size:1.5rem;line-height:2rem}.text-3xl{font-size:1.875rem;line-height:2.25rem}.text-4xl{font-size:2.25rem;line-height:2.5rem}.text-\[10px\]{font-size:10px}.text-base{font-size:1rem;line-height:1.5rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:.75rem;line-height:1rem}.font-bold{font-weight:700}.font-medium{font-weight:500}.font-normal{font-weight:400}.font-semibold{font-weight:600}.uppercase{text-transform:uppercase}.leading-5{line-height:1.25rem}.leading-none{line-height:1}.tracking-tight{letter-spacing:-.025em}.tracking-wide{letter-spacing:.025em}.tracking-wider{letter-spacing:.05em}.text-blue-600{--tw-text-opacity:1;color:rgb(37 99 235/var(--tw-text-opacity,1))}.text-blue-700{--tw-text-opacity:1;color:rgb(29 78 216/var(--tw-text-opacity,1))}.text-blue-800{--tw-text-opacity:1;color:rgb(30 64 175/var(--tw-text-opacity,1))}.text-emerald-600{--tw-text-opacity:1;color:rgb(5 150 105/var(--tw-text-opacity,1))}.text-emerald-700{--tw-text-opacity:1;color:rgb(4 120 87/var(--tw-text-opacity,1))}.text-emerald-900{--tw-text-opacity:1;color:rgb(6 78 59/var(--tw-text-opacity,1))}.text-gray-400{--tw-text-opacity:1;color:rgb(156 163 175/var(--tw-text-opacity,1))}.text-gray-500{--tw-text-opacity:1;color:rgb(107 114 128/var(--tw-text-opacity,1))}.text-gray-600{--tw-text-opacity:1;color:rgb(75 85 99/var(--tw-text-opacity,1))}.text-gray-700{--tw-text-opacity:1;color:rgb(55 65 81/var(--tw-text-opacity,1))}.text-gray-800{--tw-text-opacity:1;color:rgb(31 41 55/var(--tw-text-opacity,1))}.text-gray-900{--tw-text-opacity:1;color:rgb(17 24 39/var(--tw-text-opacity,1))}.text-green-600{--tw-text-opacity:1;color:rgb(22 163 74/var(--tw-text-opacity,1))}.text-green-700{--tw-text-opacity:1;color:rgb(21 128 61/var(--tw-text-opacity,1))}.text-green-800{--tw-text-opacity:1;color:rgb(22 101 52/var(--tw-text-opacity,1))}.text-indigo-600{--tw-text-opacity:1;color:rgb(79 70 229/var(--tw-text-opacity,1))}.text-indigo-700{--tw-text-opacity:1;color:rgb(67 56 202/var(--tw-text-opacity,1))}.text-indigo-900{--tw-text-opacity:1;color:rgb(49 46 129/var(--tw-text-opacity,1))}.text-red-600{--tw-text-opacity:1;color:rgb(220 38 38/var(--tw-text-opacity,1))}.text-red-700{--tw-text-opacity:1;color:rgb(185 28 28/var(--tw-text-opacity,1))}.text-red-800{--tw-text-opacity:1;color:rgb(153 27 27/var(--tw-text-opacity,1))}.text-slate-400{--tw-text-opacity:1;color:rgb(148 163 184/var(--tw-text-opacity,1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255/var(--tw-text-opacity,1))}.text-yellow-800{--tw-text-opacity:1;color:rgb(133 77 14/var(--tw-text-opacity,1))}.shadow-2xl{--tw-shadow:0 25px 50px -12px rgba(0,0,0,.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color)}.shadow-2xl,.shadow-lg{box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.shadow-lg{--tw-shadow:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -4px rgba(0,0,0,.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color),0 4px 6px -4px var(--tw-shadow-color)}.shadow-md{--tw-shadow:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -2px rgba(0,0,0,.1);--tw-shadow-colored:0 4px 6px -1px var(--tw-shadow-color),0 2px 4px -2px var(--tw-shadow-color)}.shadow-md,.shadow-sm{box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.shadow-sm{--tw-shadow:0 1px 2px 0 rgba(0,0,0,.05);--tw-shadow-colored:0 1px 2px 0 var(--tw-shadow-color)}.shadow-xl{--tw-shadow:0 20px 25px -5px rgba(0,0,0,.1),0 8px 10px -6px rgba(0,0,0,.1);--tw-shadow-colored:0 20px 25px -5px var(--tw-shadow-color),0 8px 10px -6px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.outline-none{outline:2px solid transparent;outline-offset:2px}.filter{filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.transition-all{transition-property:all;transition-timing-function:cubic-bezier(.4,0,.2,1);transition-duration:.15s}.transition-colors{transition-property:color,background-color,border-color,text-decoration-color,fill,stroke;transition-timing-function:cubic-bezier(.4,0,.2,1);transition-duration:.15s}.hide-scrollbar::-webkit-scrollbar{display:none}.hide-scrollbar{-ms-overflow-style:none;scrollbar-width:none}.hover\:border-emerald-500:hover{--tw-border-opacity:1;border-color:rgb(16 185 129/var(--tw-border-opacity,1))}.hover\:border-indigo-500:hover{--tw-border-opacity:1;border-color:rgb(99 102 241/var(--tw-border-opacity,1))}.hover\:bg-emerald-700:hover{--tw-bg-opacity:1;background-color:rgb(4 120 87/var(--tw-bg-opacity,1))}.hover\:bg-gray-300:hover{--tw-bg-opacity:1;background-color:rgb(209 213 219/var(--tw-bg-opacity,1))}.hover\:bg-gray-50:hover{--tw-bg-opacity:1;background-color:rgb(249 250 251/var(--tw-bg-opacity,1))}.hover\:bg-gray-900:hover{--tw-bg-opacity:1;background-color:rgb(17 24 39/var(--tw-bg-opacity,1))}.hover\:bg-indigo-200:hover{--tw-bg-opacity:1;background-color:rgb(199 210 254/var(--tw-bg-opacity,1))}.hover\:bg-indigo-700:hover{--tw-bg-opacity:1;background-color:rgb(67 56 202/var(--tw-bg-opacity,1))}.hover\:bg-red-50:hover{--tw-bg-opacity:1;background-color:rgb(254 242 242/var(--tw-bg-opacity,1))}.hover\:bg-red-600:hover{--tw-bg-opacity:1;background-color:rgb(220 38 38/var(--tw-bg-opacity,1))}.hover\:bg-red-700:hover{--tw-bg-opacity:1;background-color:rgb(185 28 28/var(--tw-bg-opacity,1))}.hover\:bg-slate-800:hover{--tw-bg-opacity:1;background-color:rgb(30 41 59/var(--tw-bg-opacity,1))}.hover\:text-gray-700:hover{--tw-text-opacity:1;color:rgb(55 65 81/var(--tw-text-opacity,1))}.hover\:text-gray-900:hover{--tw-text-opacity:1;color:rgb(17 24 39/var(--tw-text-opacity,1))}.hover\:text-green-900:hover{--tw-text-opacity:1;color:rgb(20 83 45/var(--tw-text-opacity,1))}.hover\:text-indigo-500:hover{--tw-text-opacity:1;color:rgb(99 102 241/var(--tw-text-opacity,1))}.hover\:text-indigo-800:hover{--tw-text-opacity:1;color:rgb(55 48 163/var(--tw-text-opacity,1))}.hover\:text-indigo-900:hover{--tw-text-opacity:1;color:rgb(49 46 129/var(--tw-text-opacity,1))}.hover\:text-red-600:hover{--tw-text-opacity:1;color:rgb(220 38 38/var(--tw-text-opacity,1))}.hover\:text-red-900:hover{--tw-text-opacity:1;color:rgb(127 29 29/var(--tw-text-opacity,1))}.hover\:text-white:hover{--tw-text-opacity:1;color:rgb(255 255 255/var(--tw-text-opacity,1))}.hover\:opacity-75:hover{opacity:.75}.hover\:shadow-md:hover{--tw-shadow:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -2px rgba(0,0,0,.1);--tw-shadow-colored:0 4px 6px -1px var(--tw-shadow-color),0 2px 4px -2px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.focus\:border-emerald-600:focus{--tw-border-opacity:1;border-color:rgb(5 150 105/var(--tw-border-opacity,1))}.focus\:border-indigo-500:focus{--tw-border-opacity:1;border-color:rgb(99 102 241/var(--tw-border-opacity,1))}.focus\:border-indigo-600:focus{--tw-border-opacity:1;border-color:rgb(79 70 229/var(--tw-border-opacity,1))}.focus\:ring-1:focus{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(1px + var(--tw-ring-offset-width)) var(--tw-ring-color)}.focus\:ring-1:focus,.focus\:ring-2:focus{box-shadow:var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow,0 0 #0000)}.focus\:ring-2:focus{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color)}.focus\:ring-indigo-500:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(99 102 241/var(--tw-ring-opacity,1))}.group:hover .group-hover\:text-emerald-700{--tw-text-opacity:1;color:rgb(4 120 87/var(--tw-text-opacity,1))}.group:hover .group-hover\:text-indigo-700{--tw-text-opacity:1;color:rgb(67 56 202/var(--tw-text-opacity,1))}@media (min-width:640px){.sm\:block{display:block}.sm\:px-6{padding-left:1.5rem;padding-right:1.5rem}}@media (min-width:768px){.md\:col-span-2{grid-column:span 2/span 2}.md\:col-span-3{grid-column:span 3/span 3}.md\:inline{display:inline}.md\:flex{display:flex}.md\:hidden{display:none}.md\:w-64{width:16rem}.md\:w-auto{width:auto}.md\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}.md\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}.md\:flex-row{flex-direction:row}.md\:flex-col{flex-direction:column}.md\:items-center{align-items:center}.md\:space-y-0>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0px*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0px*var(--tw-space-y-reverse))}.md\:overflow-visible{overflow:visible}.md\:p-8{padding:2rem}.md\:pb-0{padding-bottom:0}}@media (min-width:1024px){.lg\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}.lg\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}.lg\:grid-cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}.lg\:px-8{padding-left:2rem;padding-right:2rem}}
+  </style>
+</head>
+<body>
+  <div id="root">
+    <div style="font-family:system-ui,sans-serif;text-align:center;margin-top:20vh;color:#6b7280">Loading LUNA...</div>
+  </div>
+
+  <noscript>LUNA needs JavaScript enabled.</noscript>
+
+  <!-- Library loader: tries several servers for each library, then starts the app -->
+  <script>
+    (function () {
+      var TIMEOUT = window.__lunaTimeout || 8000;
+      var failed = [];
+
+      function loadScript(src) {
+        return new Promise(function (resolve, reject) {
+          var s = document.createElement('script');
+          var done = false;
+          var timer = setTimeout(function () { finish(false); }, TIMEOUT);
+          function finish(ok) {
+            if (done) return;
+            done = true;
+            clearTimeout(timer);
+            if (ok) { resolve(); } else {
+              s.remove();
+              failed.push(src.split('/')[2]);
+              reject(new Error('Could not load ' + src));
+            }
+          }
+          s.src = src;
+          s.async = false;
+          s.onload = function () { finish(true); };
+          s.onerror = function () { finish(false); };
+          document.head.appendChild(s);
+        });
+      }
+      function loadFirst(urls) {
+        return urls.reduce(function (p, u) { return p.catch(function () { return loadScript(u); }); }, Promise.reject());
+      }
+
+      var FB = '10.12.2';
+      function fb(name) {
+        return [
+          'https://www.gstatic.com/firebasejs/' + FB + '/firebase-' + name + '-compat.js',
+          'https://cdn.jsdelivr.net/npm/firebase@' + FB + '/firebase-' + name + '-compat.js'
+        ];
+      }
+
+      var chain = Promise.resolve();
+      if (!(window.React && window.ReactDOM)) {
+        chain = chain
+          .then(function () { return loadFirst(['https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js', 'https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js']); })
+          .then(function () { return loadFirst(['https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js', 'https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js']); });
+      }
+      if (!(window.firebase && firebase.auth && firebase.firestore)) {
+        chain = chain
+          .then(function () { return loadFirst(fb('app')); })
+          .then(function () { return Promise.all([loadFirst(fb('auth')), loadFirst(fb('firestore'))]); });
+      }
+
+      chain.then(function () {
+        try {
+          startApp();
+          window.__lunaMounted = true;
+        } catch (e) {
+          console.error(e);
+          window.__lunaShowError('LUNA could not start', (e && e.message) || String(e));
+        }
+      }, function () {
+        var hosts = failed.filter(function (h, i) { return failed.indexOf(h) === i; }).join(', ');
+        window.__lunaShowError(
+          'LUNA could not load its libraries',
+          'The page could not download React or Firebase (blocked or unreachable: ' + hosts + ').\n\n' +
+          'This usually means the page is running inside a restricted preview, or on a network/firewall/ad-blocker that blocks these servers.\n' +
+          'Download the file and open it in your normal browser from a local server or from a web host (see the setup steps), then try again.'
+        );
+      });
+
+      function startApp() {
+(() => {
+  const { useState, useEffect, useMemo, useRef } = React;
+  const { firebaseConfig, appId, SYSTEM_ADMIN_USER, SYSTEM_ADMIN_PASS } = window.LUNA_CONFIG;
+  const CONFIG_MISSING = !firebaseConfig.apiKey || firebaseConfig.apiKey.startsWith("PASTE");
+  let INIT_ERROR = null;
+  let auth = null;
+  let db = null;
+  if (!CONFIG_MISSING) {
+    try {
+      firebase.initializeApp(firebaseConfig);
+      auth = firebase.auth();
+      db = firebase.firestore();
+    } catch (e) {
+      console.error("Firebase init error:", e);
+      INIT_ERROR = e && e.message ? e.message : String(e);
+    }
+  }
+  const collection = (dbRef, ...path) => dbRef.collection(path.join("/"));
+  const doc = (dbRef, ...path) => dbRef.doc(path.join("/"));
+  const onSnapshot = (ref, onNext, onError) => ref.onSnapshot(onNext, onError);
+  const setDoc = (ref, data, opts) => opts ? ref.set(data, opts) : ref.set(data);
+  const updateDoc = (ref, data) => ref.update(data);
+  const increment = (n) => firebase.firestore.FieldValue.increment(n);
+  const downloadCsv = (filename, headers, rows) => {
+    const csv = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
+    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setTimeout(() => URL.revokeObjectURL(url), 1e3);
+  };
+  const Icons = {
+    User: () => /* @__PURE__ */ React.createElement("svg", { className: "w-5 h-5", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24" }, /* @__PURE__ */ React.createElement("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", d: "M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" })),
+    Lock: () => /* @__PURE__ */ React.createElement("svg", { className: "w-5 h-5", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24" }, /* @__PURE__ */ React.createElement("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", d: "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" })),
+    LogOut: () => /* @__PURE__ */ React.createElement("svg", { className: "w-5 h-5", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24" }, /* @__PURE__ */ React.createElement("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", d: "M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" })),
+    Box: () => /* @__PURE__ */ React.createElement("svg", { className: "w-5 h-5", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24" }, /* @__PURE__ */ React.createElement("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", d: "M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" })),
+    Users: () => /* @__PURE__ */ React.createElement("svg", { className: "w-5 h-5", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24" }, /* @__PURE__ */ React.createElement("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", d: "M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" })),
+    ClipboardList: () => /* @__PURE__ */ React.createElement("svg", { className: "w-5 h-5", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24" }, /* @__PURE__ */ React.createElement("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", d: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" })),
+    AlertTriangle: () => /* @__PURE__ */ React.createElement("svg", { className: "w-5 h-5", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24" }, /* @__PURE__ */ React.createElement("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", d: "M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" })),
+    Upload: () => /* @__PURE__ */ React.createElement("svg", { className: "w-5 h-5", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24" }, /* @__PURE__ */ React.createElement("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", d: "M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" })),
+    Download: () => /* @__PURE__ */ React.createElement("svg", { className: "w-5 h-5", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24" }, /* @__PURE__ */ React.createElement("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", d: "M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" })),
+    Plus: () => /* @__PURE__ */ React.createElement("svg", { className: "w-5 h-5", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24" }, /* @__PURE__ */ React.createElement("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", d: "M12 4v16m8-8H4" })),
+    X: () => /* @__PURE__ */ React.createElement("svg", { className: "w-5 h-5", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24" }, /* @__PURE__ */ React.createElement("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", d: "M6 18L18 6M6 6l12 12" })),
+    Check: () => /* @__PURE__ */ React.createElement("svg", { className: "w-5 h-5", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24" }, /* @__PURE__ */ React.createElement("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", d: "M5 13l4 4L19 7" })),
+    Search: () => /* @__PURE__ */ React.createElement("svg", { className: "w-5 h-5", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24" }, /* @__PURE__ */ React.createElement("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", d: "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" })),
+    Settings: () => /* @__PURE__ */ React.createElement("svg", { className: "w-5 h-5", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24" }, /* @__PURE__ */ React.createElement("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", d: "M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" }), /* @__PURE__ */ React.createElement("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", d: "M15 12a3 3 0 11-6 0 3 3 0 016 0z" })),
+    Camera: () => /* @__PURE__ */ React.createElement("svg", { className: "w-5 h-5", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24" }, /* @__PURE__ */ React.createElement("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", d: "M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" }), /* @__PURE__ */ React.createElement("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", d: "M15 13a3 3 0 11-6 0 3 3 0 016 0z" })),
+    List: () => /* @__PURE__ */ React.createElement("svg", { className: "w-5 h-5", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24" }, /* @__PURE__ */ React.createElement("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", d: "M4 6h16M4 10h16M4 14h16M4 18h16" }))
+  };
+  const Toast = ({ message, type, onClose }) => {
+    useEffect(() => {
+      if (message) {
+        const timer = setTimeout(() => onClose(), 3e3);
+        return () => clearTimeout(timer);
+      }
+    }, [message, onClose]);
+    if (!message) return null;
+    return /* @__PURE__ */ React.createElement("div", { className: `fixed top-4 right-4 z-50 p-4 rounded-md shadow-lg flex items-center space-x-2 text-white ${type === "error" ? "bg-red-600" : "bg-green-600"}` }, type === "error" ? /* @__PURE__ */ React.createElement(Icons.AlertTriangle, null) : /* @__PURE__ */ React.createElement(Icons.Check, null), /* @__PURE__ */ React.createElement("span", null, message), /* @__PURE__ */ React.createElement("button", { onClick: onClose, className: "ml-4 hover:opacity-75" }, /* @__PURE__ */ React.createElement(Icons.X, null)));
+  };
+  async function runDiagnostics() {
+    const hosts = ["identitytoolkit.googleapis.com", "firestore.googleapis.com"];
+    const results = {};
+    for (const h of hosts) {
+      try {
+        await Promise.race([
+          fetch("https://" + h + "/", { mode: "no-cors", cache: "no-store" }),
+          new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), 6e3))
+        ]);
+        results[h] = true;
+      } catch (e) {
+        results[h] = false;
+      }
+    }
+    return results;
+  }
+  function DiagBanner({ diag, onClose }) {
+    let inFrame = false;
+    try {
+      inFrame = window.self !== window.top;
+    } catch (e) {
+      inFrame = true;
+    }
+    const where = window.location.protocol === "file:" ? "a local file (file://)" : window.location.protocol + "//" + window.location.host;
+    const r = diag.results || {};
+    const status = (v) => v === void 0 ? "checking..." : v ? "reachable" : "BLOCKED";
+    const blocked = diag.results && (!r["identitytoolkit.googleapis.com"] || !r["firestore.googleapis.com"]);
+    return /* @__PURE__ */ React.createElement("div", { className: "fixed bottom-4 left-1/2 -translate-x-1/2 w-[92%] max-w-xl z-50 bg-white border border-red-300 rounded-xl shadow-2xl p-5 text-sm text-gray-800" }, /* @__PURE__ */ React.createElement("div", { className: "flex justify-between items-start mb-2" }, /* @__PURE__ */ React.createElement("h2", { className: "font-bold text-red-700 text-base" }, "Cannot connect to Firebase"), /* @__PURE__ */ React.createElement("button", { onClick: onClose, className: "text-gray-400 hover:text-gray-700" }, /* @__PURE__ */ React.createElement(Icons.X, null))), /* @__PURE__ */ React.createElement("p", { className: "mb-3 text-gray-600" }, "Error: auth/network-request-failed"), /* @__PURE__ */ React.createElement("ul", { className: "space-y-1 mb-3 font-mono text-xs bg-gray-50 border border-gray-200 rounded-lg p-3" }, /* @__PURE__ */ React.createElement("li", null, "This page is running at: ", where), /* @__PURE__ */ React.createElement("li", null, "Inside a preview or frame: ", inFrame ? "YES" : "no"), /* @__PURE__ */ React.createElement("li", null, "Google login server: ", status(r["identitytoolkit.googleapis.com"])), /* @__PURE__ */ React.createElement("li", null, "Google database server: ", status(r["firestore.googleapis.com"]))), inFrame && /* @__PURE__ */ React.createElement("p", { className: "mb-2 text-red-700 font-medium" }, "This page is inside a preview window, and previews block Firebase. Open your published link in a normal browser tab."), blocked && !inFrame && /* @__PURE__ */ React.createElement("p", { className: "mb-2 text-red-700 font-medium" }, "Your network, VPN, firewall or ad blocker is blocking Google. Turn off VPN and ad blockers, or try mobile data."), diag.results && !blocked && !inFrame && /* @__PURE__ */ React.createElement("p", { className: "mb-2 text-gray-700" }, "Google's servers are reachable, so try again in a moment."), /* @__PURE__ */ React.createElement("button", { onClick: () => window.location.reload(), className: "bg-indigo-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-indigo-700" }, "Try again"));
+  }
+  function App() {
+    const [firebaseUser, setFirebaseUser] = useState(null);
+    const [lunaUser, setLunaUser] = useState(null);
+    const [users, setUsers] = useState([]);
+    const [components, setComponents] = useState([]);
+    const [transactions, setTransactions] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [toast, setToast] = useState({ message: "", type: "" });
+    const [diag, setDiag] = useState(null);
+    const [qrLoaded, setQrLoaded] = useState(typeof window.Html5QrcodeScanner !== "undefined");
+    const showToast = (message, type = "success") => setToast({ message, type });
+    useEffect(() => {
+      if (CONFIG_MISSING || INIT_ERROR) return;
+      auth.signInAnonymously().catch((err) => {
+        console.error("Auth error:", err);
+        setLoading(false);
+        if (err && err.code === "auth/network-request-failed") {
+          setDiag({ results: null });
+          runDiagnostics().then((results) => setDiag({ results }));
+        }
+        showToast(
+          err && err.code === "auth/operation-not-supported-in-this-environment" ? "Firebase does not work from file://. Host the page or run a local server, then open it over http(s)." : err && err.code === "auth/network-request-failed" ? "Cannot reach Google's servers. Open the published link in a normal browser tab (not inside a preview) and check your internet, VPN, firewall or ad blocker." : `Could not connect to Firebase (${err && (err.code || err.message) || "unknown error"}). Check your config and that Anonymous sign-in is enabled.`,
+          "error"
+        );
+      });
+      const unsubscribe = auth.onAuthStateChanged((u) => {
+        setFirebaseUser(u);
+      });
+      if (typeof window.Html5QrcodeScanner !== "undefined") {
+        setQrLoaded(true);
+      } else {
+        const sources = [
+          "https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js",
+          "https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"
+        ];
+        const tryLoad = (i) => {
+          if (i >= sources.length) return;
+          const script = document.createElement("script");
+          script.src = sources[i];
+          script.async = true;
+          script.onload = () => setQrLoaded(typeof window.Html5QrcodeScanner !== "undefined");
+          script.onerror = () => {
+            script.remove();
+            tryLoad(i + 1);
+          };
+          document.body.appendChild(script);
+        };
+        tryLoad(0);
+      }
+      return () => unsubscribe();
+    }, []);
+    useEffect(() => {
+      if (CONFIG_MISSING || INIT_ERROR || !firebaseUser) return;
+      const collections = ["luna_users", "luna_components", "luna_transactions"];
+      const unsubscribes = [];
+      collections.forEach((colName) => {
+        const colRef = collection(db, "artifacts", appId, "public", "data", colName);
+        const unsub = onSnapshot(colRef, (snapshot) => {
+          const data = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
+          if (colName === "luna_users") {
+            setUsers(data);
+            setLunaUser((prev) => {
+              if (!prev) return null;
+              if (prev.id === "sysadmin") return prev;
+              return data.find((u) => u.id === prev.id) || null;
+            });
+          }
+          if (colName === "luna_components") setComponents(data);
+          if (colName === "luna_transactions") setTransactions(data);
+          setLoading(false);
+        }, (error) => {
+          console.error(`Error fetching ${colName}:`, error);
+          setLoading(false);
+          showToast("Database access denied. Check your Firestore rules.", "error");
+        });
+        unsubscribes.push(unsub);
+      });
+      return () => unsubscribes.forEach((unsub) => unsub());
+    }, [firebaseUser]);
+    const handleLogout = () => setLunaUser(null);
+    if (CONFIG_MISSING || INIT_ERROR) {
+      return /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-center min-h-screen p-4 bg-gradient-to-br from-indigo-50 to-blue-100" }, /* @__PURE__ */ React.createElement("div", { className: "bg-white p-8 rounded-xl shadow-xl w-full max-w-md border border-gray-100 text-center" }, /* @__PURE__ */ React.createElement("div", { className: "w-16 h-16 bg-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg text-white" }, /* @__PURE__ */ React.createElement(Icons.Box, null)), CONFIG_MISSING ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("h1", { className: "text-2xl font-bold text-gray-900 mb-2" }, "Firebase not configured"), /* @__PURE__ */ React.createElement("p", { className: "text-sm text-gray-500" }, "Open this file and paste your Firebase web-app config into the ", /* @__PURE__ */ React.createElement("span", { className: "font-mono" }, "firebaseConfig"), " block at the top of the page.")) : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("h1", { className: "text-2xl font-bold text-gray-900 mb-2" }, "Firebase could not start"), /* @__PURE__ */ React.createElement("p", { className: "text-sm text-gray-500 mb-3" }, INIT_ERROR), /* @__PURE__ */ React.createElement("p", { className: "text-sm text-gray-500" }, "Firebase does not work from a ", /* @__PURE__ */ React.createElement("span", { className: "font-mono" }, "file://"), " address. Host the page (Firebase Hosting, Netlify, GitHub Pages) or run a local server, then open it over http(s)."))));
+    }
+    if (loading) {
+      return /* @__PURE__ */ React.createElement("div", { className: "min-h-screen flex items-center justify-center bg-gray-50" }, /* @__PURE__ */ React.createElement("div", { className: "animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600" }));
+    }
+    return /* @__PURE__ */ React.createElement("div", { className: "min-h-screen bg-gray-50 font-sans text-gray-800" }, /* @__PURE__ */ React.createElement(Toast, { message: toast.message, type: toast.type, onClose: () => setToast({ message: "", type: "" }) }), diag && /* @__PURE__ */ React.createElement(DiagBanner, { diag, onClose: () => setDiag(null) }), !lunaUser ? /* @__PURE__ */ React.createElement(LoginScreen, { users, setLunaUser, showToast, db, appId }) : lunaUser.role === "admin" ? /* @__PURE__ */ React.createElement(
+      AdminDashboard,
+      {
+        user: lunaUser,
+        users,
+        components,
+        transactions,
+        onLogout: handleLogout,
+        db,
+        appId,
+        showToast
+      }
+    ) : /* @__PURE__ */ React.createElement(
+      StudentDashboard,
+      {
+        user: lunaUser,
+        components,
+        transactions,
+        onLogout: handleLogout,
+        db,
+        appId,
+        showToast,
+        qrLoaded
+      }
+    ));
+  }
+  function LoginScreen({ users, setLunaUser, showToast, db: db2, appId: appId2 }) {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [isForgot, setIsForgot] = useState(false);
+    const [resetStudentId, setResetStudentId] = useState("");
+    const [newPassword, setNewPassword] = useState("");
+    const handleLogin = (e) => {
+      e.preventDefault();
+      if (email === SYSTEM_ADMIN_USER && password === SYSTEM_ADMIN_PASS) {
+        setLunaUser({ id: "sysadmin", role: "admin", name: "System Admin" });
+        return;
+      }
+      const matchedUser = users.find((u) => u.email.toLowerCase() === email.toLowerCase() && u.password === password);
+      if (matchedUser) {
+        if (!matchedUser.isActive) {
+          showToast("Your account is deactivated. Contact Administrator.", "error");
+        } else {
+          setLunaUser(matchedUser);
+          showToast(`Welcome back, ${matchedUser.name}!`);
+        }
+      } else {
+        showToast("Invalid credentials.", "error");
+      }
+    };
+    const handleResetPassword = async (e) => {
+      e.preventDefault();
+      const matchedUser = users.find((u) => u.email.toLowerCase() === email.toLowerCase() && u.studentId === resetStudentId);
+      if (matchedUser) {
+        try {
+          const docRef = doc(db2, "artifacts", appId2, "public", "data", "luna_users", matchedUser.id);
+          await updateDoc(docRef, { password: newPassword });
+          showToast("Password updated successfully! You can now log in.");
+          setIsForgot(false);
+          setPassword("");
+          setNewPassword("");
+          setResetStudentId("");
+        } catch (err) {
+          showToast("Failed to update password.", "error");
+        }
+      } else {
+        showToast("No account matches that Email and Student ID.", "error");
+      }
+    };
+    return /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-center min-h-screen p-4 bg-gradient-to-br from-indigo-50 to-blue-100" }, /* @__PURE__ */ React.createElement("div", { className: "bg-white p-8 rounded-xl shadow-xl w-full max-w-md border border-gray-100" }, /* @__PURE__ */ React.createElement("div", { className: "text-center mb-8" }, /* @__PURE__ */ React.createElement("div", { className: "w-16 h-16 bg-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg text-white" }, /* @__PURE__ */ React.createElement(Icons.Box, null)), /* @__PURE__ */ React.createElement("h1", { className: "text-3xl font-bold text-gray-900 tracking-tight" }, "LUNA System"), /* @__PURE__ */ React.createElement("p", { className: "text-sm text-gray-500 mt-2" }, "Laboratory User Navigation Assistant")), !isForgot ? /* @__PURE__ */ React.createElement("form", { onSubmit: handleLogin, className: "space-y-5" }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "block text-sm font-medium text-gray-700 mb-1" }, "Email or User ID"), /* @__PURE__ */ React.createElement("div", { className: "relative" }, /* @__PURE__ */ React.createElement("div", { className: "absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400" }, /* @__PURE__ */ React.createElement(Icons.User, null)), /* @__PURE__ */ React.createElement(
+      "input",
+      {
+        type: "text",
+        required: true,
+        value: email,
+        onChange: (e) => setEmail(e.target.value),
+        className: "pl-10 w-full border border-gray-300 rounded-lg py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all",
+        placeholder: "Enter your email"
+      }
+    ))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "block text-sm font-medium text-gray-700 mb-1" }, "Password"), /* @__PURE__ */ React.createElement("div", { className: "relative" }, /* @__PURE__ */ React.createElement("div", { className: "absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400" }, /* @__PURE__ */ React.createElement(Icons.Lock, null)), /* @__PURE__ */ React.createElement(
+      "input",
+      {
+        type: "password",
+        required: true,
+        value: password,
+        onChange: (e) => setPassword(e.target.value),
+        className: "pl-10 w-full border border-gray-300 rounded-lg py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all",
+        placeholder: "\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022"
+      }
+    ))), /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between" }, /* @__PURE__ */ React.createElement("button", { type: "button", onClick: () => setIsForgot(true), className: "text-sm text-indigo-600 hover:text-indigo-500 font-medium" }, "Forgot Password?")), /* @__PURE__ */ React.createElement("button", { type: "submit", className: "w-full bg-indigo-600 text-white font-semibold py-2.5 rounded-lg hover:bg-indigo-700 transition-colors shadow-md flex justify-center items-center" }, "Login to Portal")) : /* @__PURE__ */ React.createElement("form", { onSubmit: handleResetPassword, className: "space-y-5" }, /* @__PURE__ */ React.createElement("h2", { className: "text-lg font-semibold text-gray-900 mb-2" }, "Reset Password"), /* @__PURE__ */ React.createElement("p", { className: "text-sm text-gray-500 mb-4" }, "Enter your registered Email and Student ID to reset your password."), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "block text-sm font-medium text-gray-700 mb-1" }, "Email"), /* @__PURE__ */ React.createElement(
+      "input",
+      {
+        type: "email",
+        required: true,
+        value: email,
+        onChange: (e) => setEmail(e.target.value),
+        className: "w-full border border-gray-300 rounded-lg py-2 px-3 focus:ring-indigo-500 outline-none",
+        placeholder: "Registered Email"
+      }
+    )), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "block text-sm font-medium text-gray-700 mb-1" }, "Student ID"), /* @__PURE__ */ React.createElement(
+      "input",
+      {
+        type: "text",
+        required: true,
+        value: resetStudentId,
+        onChange: (e) => setResetStudentId(e.target.value),
+        className: "w-full border border-gray-300 rounded-lg py-2 px-3 focus:ring-indigo-500 outline-none",
+        placeholder: "Your Student ID"
+      }
+    )), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "block text-sm font-medium text-gray-700 mb-1" }, "New Password"), /* @__PURE__ */ React.createElement(
+      "input",
+      {
+        type: "password",
+        required: true,
+        value: newPassword,
+        onChange: (e) => setNewPassword(e.target.value),
+        className: "w-full border border-gray-300 rounded-lg py-2 px-3 focus:ring-indigo-500 outline-none",
+        placeholder: "\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022"
+      }
+    )), /* @__PURE__ */ React.createElement("div", { className: "flex space-x-3 pt-2" }, /* @__PURE__ */ React.createElement("button", { type: "button", onClick: () => setIsForgot(false), className: "flex-1 bg-gray-200 text-gray-800 font-semibold py-2.5 rounded-lg hover:bg-gray-300 transition-colors" }, "Cancel"), /* @__PURE__ */ React.createElement("button", { type: "submit", className: "flex-1 bg-indigo-600 text-white font-semibold py-2.5 rounded-lg hover:bg-indigo-700 transition-colors shadow-md" }, "Reset Password")))));
+  }
+  function AdminDashboard({ user, users, components, transactions, onLogout, db: db2, appId: appId2, showToast }) {
+    const [activeTab, setActiveTab] = useState("overview");
+    const stats = useMemo(() => {
+      const totalComps = components.length;
+      const lowStock = components.filter((c) => Number(c.availableQty) <= Number(c.minStock)).length;
+      const activeTrans = transactions.filter((t) => t.status === "ISSUED" || t.status === "PARTIALLY RETURNED").length;
+      const totalStudents = users.filter((u) => u.role === "student").length;
+      return { totalComps, lowStock, activeTrans, totalStudents };
+    }, [components, transactions, users]);
+    const navItems = [
+      { id: "overview", label: "Overview", icon: /* @__PURE__ */ React.createElement(Icons.Box, null) },
+      { id: "inventory", label: "Inventory", icon: /* @__PURE__ */ React.createElement(Icons.List, null) },
+      { id: "students", label: "Students", icon: /* @__PURE__ */ React.createElement(Icons.Users, null) },
+      { id: "transactions", label: "Transactions", icon: /* @__PURE__ */ React.createElement(Icons.ClipboardList, null) },
+      { id: "issued", label: "Currently Issued", icon: /* @__PURE__ */ React.createElement(Icons.Check, null) }
+    ];
+    return /* @__PURE__ */ React.createElement("div", { className: "flex h-screen overflow-hidden bg-gray-100" }, /* @__PURE__ */ React.createElement("div", { className: "w-64 bg-slate-900 text-white flex flex-col shadow-xl z-10 hidden md:flex" }, /* @__PURE__ */ React.createElement("div", { className: "p-6 border-b border-slate-800 flex items-center space-x-3" }, /* @__PURE__ */ React.createElement("div", { className: "w-8 h-8 bg-indigo-500 rounded flex items-center justify-center" }, /* @__PURE__ */ React.createElement(Icons.Box, null)), /* @__PURE__ */ React.createElement("span", { className: "text-xl font-bold tracking-wider" }, "LUNA Admin")), /* @__PURE__ */ React.createElement("nav", { className: "flex-1 overflow-y-auto py-4" }, navItems.map((item) => /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        key: item.id,
+        onClick: () => setActiveTab(item.id),
+        className: `w-full flex items-center space-x-3 px-6 py-3 text-sm transition-colors ${activeTab === item.id ? "bg-indigo-600 text-white border-l-4 border-indigo-400" : "text-slate-400 hover:bg-slate-800 hover:text-white"}`
+      },
+      item.icon,
+      " ",
+      /* @__PURE__ */ React.createElement("span", null, item.label)
+    ))), /* @__PURE__ */ React.createElement("div", { className: "p-4 border-t border-slate-800" }, /* @__PURE__ */ React.createElement("div", { className: "mb-4 px-2" }, /* @__PURE__ */ React.createElement("p", { className: "text-sm font-medium text-white" }, user.name), /* @__PURE__ */ React.createElement("p", { className: "text-xs text-slate-400" }, "Administrator")), /* @__PURE__ */ React.createElement("button", { onClick: onLogout, className: "w-full flex items-center justify-center space-x-2 bg-slate-800 hover:bg-red-600 text-white py-2 rounded-md transition-colors text-sm" }, /* @__PURE__ */ React.createElement(Icons.LogOut, null), " ", /* @__PURE__ */ React.createElement("span", null, "Logout")))), /* @__PURE__ */ React.createElement("div", { className: "flex-1 flex flex-col overflow-hidden" }, /* @__PURE__ */ React.createElement("header", { className: "md:hidden bg-white shadow-sm p-4 flex justify-between items-center" }, /* @__PURE__ */ React.createElement("span", { className: "font-bold text-lg text-indigo-700" }, "LUNA Admin"), /* @__PURE__ */ React.createElement("select", { value: activeTab, onChange: (e) => setActiveTab(e.target.value), className: "bg-gray-100 border-none rounded p-2 text-sm outline-none" }, navItems.map((item) => /* @__PURE__ */ React.createElement("option", { key: item.id, value: item.id }, item.label)))), /* @__PURE__ */ React.createElement("main", { className: "flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6" }, activeTab === "overview" && /* @__PURE__ */ React.createElement(AdminOverview, { stats, components }), activeTab === "inventory" && /* @__PURE__ */ React.createElement(AdminInventory, { components, db: db2, appId: appId2, showToast }), activeTab === "students" && /* @__PURE__ */ React.createElement(AdminStudents, { users, db: db2, appId: appId2, showToast }), activeTab === "transactions" && /* @__PURE__ */ React.createElement(AdminTransactions, { transactions, components, users }), activeTab === "issued" && /* @__PURE__ */ React.createElement(AdminIssued, { transactions, components, users }))));
+  }
+  function AdminOverview({ stats, components }) {
+    const lowStockItems = components.filter((c) => Number(c.availableQty) <= Number(c.minStock));
+    return /* @__PURE__ */ React.createElement("div", { className: "space-y-6" }, /* @__PURE__ */ React.createElement("h1", { className: "text-2xl font-bold text-gray-900" }, "Dashboard Overview"), /* @__PURE__ */ React.createElement("div", { className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" }, /* @__PURE__ */ React.createElement(StatCard, { title: "Total Components", value: stats.totalComps, icon: /* @__PURE__ */ React.createElement(Icons.Box, null), color: "bg-blue-500" }), /* @__PURE__ */ React.createElement(StatCard, { title: "Low Stock Alerts", value: stats.lowStock, icon: /* @__PURE__ */ React.createElement(Icons.AlertTriangle, null), color: stats.lowStock > 0 ? "bg-red-500" : "bg-green-500" }), /* @__PURE__ */ React.createElement(StatCard, { title: "Active Transactions", value: stats.activeTrans, icon: /* @__PURE__ */ React.createElement(Icons.ClipboardList, null), color: "bg-orange-500" }), /* @__PURE__ */ React.createElement(StatCard, { title: "Registered Students", value: stats.totalStudents, icon: /* @__PURE__ */ React.createElement(Icons.Users, null), color: "bg-indigo-500" })), lowStockItems.length > 0 && /* @__PURE__ */ React.createElement("div", { className: "bg-white rounded-xl shadow-sm border border-red-200 overflow-hidden mt-8" }, /* @__PURE__ */ React.createElement("div", { className: "bg-red-50 border-b border-red-200 p-4 flex items-center space-x-2 text-red-700" }, /* @__PURE__ */ React.createElement(Icons.AlertTriangle, null), /* @__PURE__ */ React.createElement("h2", { className: "font-semibold text-lg" }, "Attention Required: Low Stock")), /* @__PURE__ */ React.createElement("div", { className: "p-0" }, /* @__PURE__ */ React.createElement("table", { className: "min-w-full divide-y divide-gray-200" }, /* @__PURE__ */ React.createElement("thead", { className: "bg-gray-50" }, /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("th", { className: "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" }, "Item"), /* @__PURE__ */ React.createElement("th", { className: "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" }, "Location"), /* @__PURE__ */ React.createElement("th", { className: "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" }, "Available / Min"))), /* @__PURE__ */ React.createElement("tbody", { className: "bg-white divide-y divide-gray-200" }, lowStockItems.map((item) => /* @__PURE__ */ React.createElement("tr", { key: item.id }, /* @__PURE__ */ React.createElement("td", { className: "px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" }, item.name, " ", /* @__PURE__ */ React.createElement("span", { className: "text-xs text-gray-500 block" }, item.id)), /* @__PURE__ */ React.createElement("td", { className: "px-6 py-4 whitespace-nowrap text-sm text-gray-500" }, item.drawer), /* @__PURE__ */ React.createElement("td", { className: "px-6 py-4 whitespace-nowrap text-sm" }, /* @__PURE__ */ React.createElement("span", { className: "text-red-600 font-bold" }, item.availableQty), " ", /* @__PURE__ */ React.createElement("span", { className: "text-gray-400" }, "/ ", item.minStock)))))))));
+  }
+  function StatCard({ title, value, icon, color }) {
+    return /* @__PURE__ */ React.createElement("div", { className: "bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex items-center space-x-4" }, /* @__PURE__ */ React.createElement("div", { className: `w-12 h-12 rounded-full flex items-center justify-center text-white ${color}` }, icon), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", { className: "text-sm font-medium text-gray-500" }, title), /* @__PURE__ */ React.createElement("p", { className: "text-2xl font-bold text-gray-900" }, value)));
+  }
+  function AdminStudents({ users, db: db2, appId: appId2, showToast }) {
+    const [showForm, setShowForm] = useState(false);
+    const [formData, setFormData] = useState({ name: "", studentId: "", email: "", password: "", isActive: true });
+    const [searchTerm, setSearchTerm] = useState("");
+    const students = users.filter((u) => u.role === "student");
+    const filteredStudents = students.filter((s) => s.name.toLowerCase().includes(searchTerm.toLowerCase()) || s.studentId.toLowerCase().includes(searchTerm.toLowerCase()));
+    const handleSave = async (e) => {
+      e.preventDefault();
+      try {
+        const id = formData.id || `STU-${Date.now()}`;
+        const docRef = doc(db2, "artifacts", appId2, "public", "data", "luna_users", id);
+        await setDoc(docRef, { ...formData, id, role: "student", createdAt: (/* @__PURE__ */ new Date()).toISOString() }, { merge: true });
+        showToast(formData.id ? "Student updated." : "Student registered successfully.");
+        setShowForm(false);
+      } catch (err) {
+        showToast("Error saving student.", "error");
+      }
+    };
+    const handleToggleStatus = async (student) => {
+      try {
+        const docRef = doc(db2, "artifacts", appId2, "public", "data", "luna_users", student.id);
+        await updateDoc(docRef, { isActive: !student.isActive });
+        showToast(`Student ${!student.isActive ? "activated" : "deactivated"}.`);
+      } catch (err) {
+        showToast("Error updating status.", "error");
+      }
+    };
+    const handleCsvImport = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      if (!file.name.toLowerCase().endsWith(".csv")) {
+        showToast("Please select a valid .csv file.", "error");
+        e.target.value = null;
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        try {
+          const text = event.target.result;
+          const lines = text.split("\n");
+          let count = 0;
+          for (let i = 1; i < lines.length; i++) {
+            const line = lines[i].trim();
+            if (!line) continue;
+            const parts = line.split(",");
+            if (parts.length >= 4) {
+              const name = parts[0].trim();
+              const studentId = parts[1].trim();
+              const email = parts[2].trim();
+              const password = parts[3].trim();
+              const id = `STU-${Date.now()}-${i}`;
+              const docRef = doc(db2, "artifacts", appId2, "public", "data", "luna_users", id);
+              await setDoc(docRef, {
+                id,
+                name,
+                studentId,
+                email,
+                password,
+                role: "student",
+                isActive: true,
+                createdAt: (/* @__PURE__ */ new Date()).toISOString()
+              });
+              count++;
+            }
+          }
+          showToast(`Successfully imported ${count} students from CSV.`);
+        } catch (err) {
+          showToast("Error parsing CSV file.", "error");
+        }
+        e.target.value = null;
+      };
+      reader.readAsText(file);
+    };
+    return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "flex flex-col md:flex-row justify-between items-center mb-6 space-y-4 md:space-y-0" }, /* @__PURE__ */ React.createElement("h1", { className: "text-2xl font-semibold text-gray-900" }, "Student Management"), /* @__PURE__ */ React.createElement("div", { className: "flex space-x-3 w-full md:w-auto" }, /* @__PURE__ */ React.createElement("div", { className: "relative" }, /* @__PURE__ */ React.createElement("input", { type: "file", id: "csv-upload", accept: "*/*", onChange: handleCsvImport, className: "hidden" }), /* @__PURE__ */ React.createElement("label", { htmlFor: "csv-upload", className: "cursor-pointer bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-50 flex items-center shadow-sm h-full whitespace-nowrap" }, /* @__PURE__ */ React.createElement("div", { className: "mr-2" }, /* @__PURE__ */ React.createElement(Icons.Upload, null)), " Bulk CSV")), /* @__PURE__ */ React.createElement("button", { onClick: () => {
+      setFormData({ name: "", studentId: "", email: "", password: "", isActive: true });
+      setShowForm(true);
+    }, className: "bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 flex items-center shadow-sm whitespace-nowrap" }, /* @__PURE__ */ React.createElement(Icons.Plus, null), " ", /* @__PURE__ */ React.createElement("span", { className: "ml-2" }, "Add Student")))), showForm && /* @__PURE__ */ React.createElement("div", { className: "mb-8 bg-white p-6 rounded-xl shadow-md border border-gray-200" }, /* @__PURE__ */ React.createElement("h2", { className: "text-lg font-medium mb-4" }, formData.id ? "Edit Student" : "New Student Registration"), /* @__PURE__ */ React.createElement("form", { onSubmit: handleSave, className: "grid grid-cols-1 md:grid-cols-2 gap-4" }, /* @__PURE__ */ React.createElement("input", { type: "text", placeholder: "Full Name", required: true, value: formData.name, onChange: (e) => setFormData({ ...formData, name: e.target.value }), className: "border p-2 rounded outline-none focus:ring-2 focus:ring-indigo-500" }), /* @__PURE__ */ React.createElement("input", { type: "text", placeholder: "Student ID (College ID)", required: true, value: formData.studentId, onChange: (e) => setFormData({ ...formData, studentId: e.target.value }), className: "border p-2 rounded outline-none focus:ring-2 focus:ring-indigo-500" }), /* @__PURE__ */ React.createElement("input", { type: "email", placeholder: "Email Address", required: true, value: formData.email, onChange: (e) => setFormData({ ...formData, email: e.target.value }), className: "border p-2 rounded outline-none focus:ring-2 focus:ring-indigo-500" }), /* @__PURE__ */ React.createElement("input", { type: "text", placeholder: "Login Password", required: true, value: formData.password, onChange: (e) => setFormData({ ...formData, password: e.target.value }), className: "border p-2 rounded outline-none focus:ring-2 focus:ring-indigo-500" }), /* @__PURE__ */ React.createElement("div", { className: "md:col-span-2 flex justify-end space-x-3 mt-2" }, /* @__PURE__ */ React.createElement("button", { type: "button", onClick: () => setShowForm(false), className: "px-4 py-2 text-gray-600 hover:text-gray-900 font-medium" }, "Cancel"), /* @__PURE__ */ React.createElement("button", { type: "submit", className: "px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 font-medium" }, "Save Student")))), /* @__PURE__ */ React.createElement("div", { className: "bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden" }, /* @__PURE__ */ React.createElement("div", { className: "p-4 border-b border-gray-200 flex justify-between items-center bg-gray-50" }, /* @__PURE__ */ React.createElement("div", { className: "relative w-full max-w-sm" }, /* @__PURE__ */ React.createElement("div", { className: "absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400" }, /* @__PURE__ */ React.createElement(Icons.Search, null)), /* @__PURE__ */ React.createElement("input", { type: "text", placeholder: "Search students...", value: searchTerm, onChange: (e) => setSearchTerm(e.target.value), className: "pl-10 w-full border border-gray-300 rounded-md py-1.5 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm" }))), /* @__PURE__ */ React.createElement("div", { className: "overflow-x-auto" }, /* @__PURE__ */ React.createElement("table", { className: "min-w-full divide-y divide-gray-200" }, /* @__PURE__ */ React.createElement("thead", { className: "bg-gray-50" }, /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("th", { className: "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" }, "Student"), /* @__PURE__ */ React.createElement("th", { className: "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" }, "ID / Email"), /* @__PURE__ */ React.createElement("th", { className: "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" }, "Status"), /* @__PURE__ */ React.createElement("th", { className: "px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider" }, "Actions"))), /* @__PURE__ */ React.createElement("tbody", { className: "bg-white divide-y divide-gray-200" }, filteredStudents.map((student) => /* @__PURE__ */ React.createElement("tr", { key: student.id, className: "hover:bg-gray-50" }, /* @__PURE__ */ React.createElement("td", { className: "px-6 py-4 whitespace-nowrap" }, /* @__PURE__ */ React.createElement("div", { className: "text-sm font-medium text-gray-900" }, student.name)), /* @__PURE__ */ React.createElement("td", { className: "px-6 py-4 whitespace-nowrap" }, /* @__PURE__ */ React.createElement("div", { className: "text-sm text-gray-900" }, student.studentId), /* @__PURE__ */ React.createElement("div", { className: "text-xs text-gray-500" }, student.email)), /* @__PURE__ */ React.createElement("td", { className: "px-6 py-4 whitespace-nowrap" }, /* @__PURE__ */ React.createElement("span", { className: `px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${student.isActive ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}` }, student.isActive ? "Active" : "Inactive")), /* @__PURE__ */ React.createElement("td", { className: "px-6 py-4 whitespace-nowrap text-right text-sm font-medium" }, /* @__PURE__ */ React.createElement("button", { onClick: () => {
+      setFormData(student);
+      setShowForm(true);
+    }, className: "text-indigo-600 hover:text-indigo-900 mr-4" }, "Edit"), /* @__PURE__ */ React.createElement("button", { onClick: () => handleToggleStatus(student), className: `${student.isActive ? "text-red-600 hover:text-red-900" : "text-green-600 hover:text-green-900"}` }, student.isActive ? "Deactivate" : "Activate")))), filteredStudents.length === 0 && /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("td", { colSpan: "4", className: "px-6 py-8 text-center text-gray-500" }, "No students found.")))))));
+  }
+  function AdminInventory({ components, db: db2, appId: appId2, showToast }) {
+    const [showForm, setShowForm] = useState(false);
+    const [formData, setFormData] = useState({ id: "", name: "", category: "", description: "", totalQty: 0, minStock: 0, drawer: "" });
+    const [searchTerm, setSearchTerm] = useState("");
+    const filteredComponents = components.filter((c) => c.name.toLowerCase().includes(searchTerm.toLowerCase()) || c.id.toLowerCase().includes(searchTerm.toLowerCase()));
+    const handleSave = async (e) => {
+      e.preventDefault();
+      try {
+        const docRef = doc(db2, "artifacts", appId2, "public", "data", "luna_components", formData.id);
+        const isNew = !components.find((c) => c.id === formData.id);
+        const dataToSave = {
+          ...formData,
+          totalQty: Number(formData.totalQty),
+          minStock: Number(formData.minStock),
+          availableQty: isNew ? Number(formData.totalQty) : Number(formData.availableQty || formData.totalQty)
+        };
+        await setDoc(docRef, dataToSave, { merge: true });
+        showToast("Component saved successfully.");
+        setShowForm(false);
+      } catch (err) {
+        showToast("Error saving component.", "error");
+      }
+    };
+    const exportToCsv = () => {
+      const headers = ["Component ID", "Name", "Category", "Total Qty", "Available Qty", "Min Stock", "Drawer Location", "Status"];
+      const rows = components.map((c) => [
+        c.id,
+        `"${c.name}"`,
+        `"${c.category}"`,
+        c.totalQty,
+        c.availableQty,
+        c.minStock,
+        c.drawer,
+        c.availableQty <= c.minStock ? "LOW STOCK" : "AVAILABLE"
+      ]);
+      downloadCsv(`luna_inventory_${(/* @__PURE__ */ new Date()).toISOString().split("T")[0]}.csv`, headers, rows);
+    };
+    return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "flex flex-col md:flex-row justify-between items-center mb-6 space-y-4 md:space-y-0" }, /* @__PURE__ */ React.createElement("h1", { className: "text-2xl font-semibold text-gray-900" }, "Inventory Management"), /* @__PURE__ */ React.createElement("div", { className: "flex space-x-3 w-full md:w-auto" }, /* @__PURE__ */ React.createElement("button", { onClick: exportToCsv, className: "bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-50 flex items-center shadow-sm" }, /* @__PURE__ */ React.createElement(Icons.Download, null), " ", /* @__PURE__ */ React.createElement("span", { className: "ml-2 hidden md:inline" }, "Export CSV")), /* @__PURE__ */ React.createElement("button", { onClick: () => {
+      setFormData({ id: "", name: "", category: "", description: "", totalQty: 0, minStock: 0, drawer: "" });
+      setShowForm(true);
+    }, className: "bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 flex items-center shadow-sm whitespace-nowrap" }, /* @__PURE__ */ React.createElement(Icons.Plus, null), " ", /* @__PURE__ */ React.createElement("span", { className: "ml-2" }, "Add Component")))), showForm && /* @__PURE__ */ React.createElement("div", { className: "mb-8 bg-white p-6 rounded-xl shadow-md border border-gray-200" }, /* @__PURE__ */ React.createElement("h2", { className: "text-lg font-medium mb-4" }, "Component Details"), /* @__PURE__ */ React.createElement("form", { onSubmit: handleSave, className: "grid grid-cols-1 md:grid-cols-3 gap-4" }, /* @__PURE__ */ React.createElement("input", { type: "text", placeholder: "Component ID (e.g. C001)", required: true, value: formData.id, onChange: (e) => setFormData({ ...formData, id: e.target.value }), className: "border p-2 rounded outline-none focus:ring-2 focus:ring-indigo-500", disabled: !!components.find((c) => c.id === formData.id) }), /* @__PURE__ */ React.createElement("input", { type: "text", placeholder: "Name (e.g. Resistor 1k\u03A9)", required: true, value: formData.name, onChange: (e) => setFormData({ ...formData, name: e.target.value }), className: "border p-2 rounded outline-none focus:ring-2 focus:ring-indigo-500 md:col-span-2" }), /* @__PURE__ */ React.createElement("input", { type: "text", placeholder: "Category (e.g. Passives)", required: true, value: formData.category, onChange: (e) => setFormData({ ...formData, category: e.target.value }), className: "border p-2 rounded outline-none focus:ring-2 focus:ring-indigo-500" }), /* @__PURE__ */ React.createElement("input", { type: "number", placeholder: "Total Quantity", required: true, min: "0", value: formData.totalQty, onChange: (e) => setFormData({ ...formData, totalQty: e.target.value }), className: "border p-2 rounded outline-none focus:ring-2 focus:ring-indigo-500" }), /* @__PURE__ */ React.createElement("input", { type: "number", placeholder: "Minimum Stock Alert", required: true, min: "0", value: formData.minStock, onChange: (e) => setFormData({ ...formData, minStock: e.target.value }), className: "border p-2 rounded outline-none focus:ring-2 focus:ring-indigo-500" }), /* @__PURE__ */ React.createElement("input", { type: "text", placeholder: "Drawer Location (e.g. D01)", required: true, value: formData.drawer, onChange: (e) => setFormData({ ...formData, drawer: e.target.value }), className: "border p-2 rounded outline-none focus:ring-2 focus:ring-indigo-500" }), /* @__PURE__ */ React.createElement("input", { type: "text", placeholder: "Description/Specs (optional)", value: formData.description, onChange: (e) => setFormData({ ...formData, description: e.target.value }), className: "border p-2 rounded outline-none focus:ring-2 focus:ring-indigo-500 md:col-span-2" }), /* @__PURE__ */ React.createElement("div", { className: "md:col-span-3 flex justify-end space-x-3 mt-2" }, /* @__PURE__ */ React.createElement("button", { type: "button", onClick: () => setShowForm(false), className: "px-4 py-2 text-gray-600 hover:text-gray-900 font-medium" }, "Cancel"), /* @__PURE__ */ React.createElement("button", { type: "submit", className: "px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 font-medium" }, "Save Component")))), /* @__PURE__ */ React.createElement("div", { className: "bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden" }, /* @__PURE__ */ React.createElement("div", { className: "p-4 border-b border-gray-200 flex justify-between items-center bg-gray-50" }, /* @__PURE__ */ React.createElement("div", { className: "relative w-full max-w-sm" }, /* @__PURE__ */ React.createElement("div", { className: "absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400" }, /* @__PURE__ */ React.createElement(Icons.Search, null)), /* @__PURE__ */ React.createElement("input", { type: "text", placeholder: "Search inventory...", value: searchTerm, onChange: (e) => setSearchTerm(e.target.value), className: "pl-10 w-full border border-gray-300 rounded-md py-1.5 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm" }))), /* @__PURE__ */ React.createElement("div", { className: "overflow-x-auto" }, /* @__PURE__ */ React.createElement("table", { className: "min-w-full divide-y divide-gray-200" }, /* @__PURE__ */ React.createElement("thead", { className: "bg-gray-50" }, /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("th", { className: "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" }, "ID"), /* @__PURE__ */ React.createElement("th", { className: "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" }, "Component"), /* @__PURE__ */ React.createElement("th", { className: "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" }, "Location"), /* @__PURE__ */ React.createElement("th", { className: "px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase" }, "Stock (Avail / Total)"), /* @__PURE__ */ React.createElement("th", { className: "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" }, "Status"), /* @__PURE__ */ React.createElement("th", { className: "px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase" }, "Action"))), /* @__PURE__ */ React.createElement("tbody", { className: "bg-white divide-y divide-gray-200" }, filteredComponents.map((comp) => /* @__PURE__ */ React.createElement("tr", { key: comp.id, className: "hover:bg-gray-50" }, /* @__PURE__ */ React.createElement("td", { className: "px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" }, comp.id), /* @__PURE__ */ React.createElement("td", { className: "px-6 py-4 whitespace-nowrap" }, /* @__PURE__ */ React.createElement("div", { className: "text-sm font-medium text-gray-900" }, comp.name), /* @__PURE__ */ React.createElement("div", { className: "text-xs text-gray-500" }, comp.category)), /* @__PURE__ */ React.createElement("td", { className: "px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono" }, comp.drawer), /* @__PURE__ */ React.createElement("td", { className: "px-6 py-4 whitespace-nowrap text-center text-sm" }, /* @__PURE__ */ React.createElement("span", { className: `font-bold ${comp.availableQty <= comp.minStock ? "text-red-600" : "text-gray-900"}` }, comp.availableQty), /* @__PURE__ */ React.createElement("span", { className: "text-gray-400 mx-1" }, "/"), /* @__PURE__ */ React.createElement("span", { className: "text-gray-600" }, comp.totalQty)), /* @__PURE__ */ React.createElement("td", { className: "px-6 py-4 whitespace-nowrap" }, comp.availableQty === 0 ? /* @__PURE__ */ React.createElement("span", { className: "px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800" }, "OUT OF STOCK") : comp.availableQty <= comp.minStock ? /* @__PURE__ */ React.createElement("span", { className: "px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800" }, "LOW STOCK") : /* @__PURE__ */ React.createElement("span", { className: "px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800" }, "AVAILABLE")), /* @__PURE__ */ React.createElement("td", { className: "px-6 py-4 whitespace-nowrap text-right text-sm font-medium" }, /* @__PURE__ */ React.createElement("button", { onClick: () => {
+      setFormData(comp);
+      setShowForm(true);
+    }, className: "text-indigo-600 hover:text-indigo-900" }, "Edit")))))))));
+  }
+  function AdminTransactions({ transactions }) {
+    const sorted = [...transactions].sort((a, b) => new Date(b.issueTimestamp) - new Date(a.issueTimestamp));
+    const exportToCsv = () => {
+      const headers = ["Trans ID", "Student", "Student ID", "Component", "Comp ID", "Qty Issued", "Qty Returned", "Issue Date", "Return Date", "Status"];
+      const rows = sorted.map((t) => [
+        t.id,
+        `"${t.studentName}"`,
+        t.studentId,
+        `"${t.componentName}"`,
+        t.componentId,
+        t.qtyIssued,
+        t.qtyReturned,
+        `"${new Date(t.issueTimestamp).toLocaleString()}"`,
+        t.returnTimestamp ? `"${new Date(t.returnTimestamp).toLocaleString()}"` : "N/A",
+        t.status
+      ]);
+      downloadCsv(`luna_transactions_${(/* @__PURE__ */ new Date()).toISOString().split("T")[0]}.csv`, headers, rows);
+    };
+    return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "flex justify-between items-center mb-6" }, /* @__PURE__ */ React.createElement("h1", { className: "text-2xl font-semibold text-gray-900" }, "Transaction History"), /* @__PURE__ */ React.createElement("button", { onClick: exportToCsv, className: "bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-50 flex items-center shadow-sm" }, /* @__PURE__ */ React.createElement(Icons.Download, null), " ", /* @__PURE__ */ React.createElement("span", { className: "ml-2" }, "Export CSV"))), /* @__PURE__ */ React.createElement("div", { className: "bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden" }, /* @__PURE__ */ React.createElement("div", { className: "overflow-x-auto" }, /* @__PURE__ */ React.createElement("table", { className: "min-w-full divide-y divide-gray-200" }, /* @__PURE__ */ React.createElement("thead", { className: "bg-gray-50" }, /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("th", { className: "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" }, "Student"), /* @__PURE__ */ React.createElement("th", { className: "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" }, "Component"), /* @__PURE__ */ React.createElement("th", { className: "px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase" }, "Qty (Iss/Ret)"), /* @__PURE__ */ React.createElement("th", { className: "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" }, "Date / Time"), /* @__PURE__ */ React.createElement("th", { className: "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" }, "Status"))), /* @__PURE__ */ React.createElement("tbody", { className: "bg-white divide-y divide-gray-200" }, sorted.map((t) => /* @__PURE__ */ React.createElement("tr", { key: t.id, className: "hover:bg-gray-50" }, /* @__PURE__ */ React.createElement("td", { className: "px-6 py-4 whitespace-nowrap" }, /* @__PURE__ */ React.createElement("div", { className: "text-sm font-medium text-gray-900" }, t.studentName), /* @__PURE__ */ React.createElement("div", { className: "text-xs text-gray-500" }, t.studentId)), /* @__PURE__ */ React.createElement("td", { className: "px-6 py-4 whitespace-nowrap" }, /* @__PURE__ */ React.createElement("div", { className: "text-sm font-medium text-gray-900" }, t.componentName), /* @__PURE__ */ React.createElement("div", { className: "text-xs text-gray-500" }, t.componentId)), /* @__PURE__ */ React.createElement("td", { className: "px-6 py-4 whitespace-nowrap text-center text-sm text-gray-700" }, t.qtyIssued, " / ", t.qtyReturned), /* @__PURE__ */ React.createElement("td", { className: "px-6 py-4 whitespace-nowrap text-sm text-gray-500" }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("span", { className: "font-semibold text-green-700" }, "Iss:"), " ", new Date(t.issueTimestamp).toLocaleString()), t.returnTimestamp && /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("span", { className: "font-semibold text-blue-700" }, "Ret:"), " ", new Date(t.returnTimestamp).toLocaleString())), /* @__PURE__ */ React.createElement("td", { className: "px-6 py-4 whitespace-nowrap" }, /* @__PURE__ */ React.createElement("span", { className: `px-2 py-1 text-xs font-semibold rounded-full
+                          ${t.status === "COMPLETED" ? "bg-gray-100 text-gray-600" : t.status === "PARTIALLY RETURNED" ? "bg-blue-100 text-blue-800" : "bg-green-100 text-green-800"}` }, t.status)))))))));
+  }
+  function AdminIssued({ transactions }) {
+    const active = transactions.filter((t) => t.status === "ISSUED" || t.status === "PARTIALLY RETURNED");
+    return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h1", { className: "text-2xl font-semibold text-gray-900 mb-6" }, "Currently Issued Components"), /* @__PURE__ */ React.createElement("div", { className: "bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden" }, /* @__PURE__ */ React.createElement("div", { className: "overflow-x-auto" }, /* @__PURE__ */ React.createElement("table", { className: "min-w-full divide-y divide-gray-200" }, /* @__PURE__ */ React.createElement("thead", { className: "bg-gray-50" }, /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("th", { className: "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" }, "Component"), /* @__PURE__ */ React.createElement("th", { className: "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" }, "Student"), /* @__PURE__ */ React.createElement("th", { className: "px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase" }, "Qty Holding"), /* @__PURE__ */ React.createElement("th", { className: "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" }, "Since"))), /* @__PURE__ */ React.createElement("tbody", { className: "bg-white divide-y divide-gray-200" }, active.map((t) => /* @__PURE__ */ React.createElement("tr", { key: t.id, className: "hover:bg-gray-50" }, /* @__PURE__ */ React.createElement("td", { className: "px-6 py-4 whitespace-nowrap" }, /* @__PURE__ */ React.createElement("div", { className: "text-sm font-medium text-gray-900" }, t.componentName), /* @__PURE__ */ React.createElement("div", { className: "text-xs text-gray-500" }, t.componentId)), /* @__PURE__ */ React.createElement("td", { className: "px-6 py-4 whitespace-nowrap" }, /* @__PURE__ */ React.createElement("div", { className: "text-sm font-medium text-gray-900" }, t.studentName), /* @__PURE__ */ React.createElement("div", { className: "text-xs text-gray-500" }, t.studentId)), /* @__PURE__ */ React.createElement("td", { className: "px-6 py-4 whitespace-nowrap text-center text-sm font-bold text-indigo-600" }, t.qtyIssued - t.qtyReturned), /* @__PURE__ */ React.createElement("td", { className: "px-6 py-4 whitespace-nowrap text-sm text-gray-500" }, new Date(t.issueTimestamp).toLocaleString()))), active.length === 0 && /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("td", { colSpan: "4", className: "px-6 py-8 text-center text-gray-500" }, "All components are currently in inventory.")))))));
+  }
+  function StudentDashboard({ user, components, transactions, onLogout, db: db2, appId: appId2, showToast, qrLoaded }) {
+    const [activeTab, setActiveTab] = useState("overview");
+    const myActiveTransactions = transactions.filter((t) => t.studentId === user.studentId && (t.status === "ISSUED" || t.status === "PARTIALLY RETURNED"));
+    const componentsHeld = myActiveTransactions.reduce((acc, t) => acc + (t.qtyIssued - t.qtyReturned), 0);
+    const navItems = [
+      { id: "overview", label: "My Status", icon: /* @__PURE__ */ React.createElement(Icons.User, null) },
+      { id: "issue", label: "Issue Component", icon: /* @__PURE__ */ React.createElement(Icons.Box, null) },
+      { id: "return", label: "Return Component", icon: /* @__PURE__ */ React.createElement(Icons.Check, null) },
+      { id: "history", label: "Transaction History", icon: /* @__PURE__ */ React.createElement(Icons.ClipboardList, null) },
+      { id: "profile", label: "Profile Settings", icon: /* @__PURE__ */ React.createElement(Icons.Settings, null) }
+    ];
+    return /* @__PURE__ */ React.createElement("div", { className: "flex flex-col h-screen bg-gray-50" }, /* @__PURE__ */ React.createElement("header", { className: "bg-white shadow-sm border-b border-gray-200" }, /* @__PURE__ */ React.createElement("div", { className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" }, /* @__PURE__ */ React.createElement("div", { className: "flex justify-between items-center h-16" }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center space-x-2" }, /* @__PURE__ */ React.createElement("div", { className: "w-8 h-8 bg-indigo-600 rounded flex items-center justify-center text-white" }, /* @__PURE__ */ React.createElement(Icons.Box, null)), /* @__PURE__ */ React.createElement("span", { className: "font-bold text-xl text-gray-900 tracking-tight" }, "LUNA")), /* @__PURE__ */ React.createElement("div", { className: "flex items-center space-x-4" }, /* @__PURE__ */ React.createElement("div", { className: "text-right hidden sm:block" }, /* @__PURE__ */ React.createElement("div", { className: "text-sm font-medium text-gray-900" }, user.name), /* @__PURE__ */ React.createElement("div", { className: "text-xs text-gray-500" }, "ID: ", user.studentId)), /* @__PURE__ */ React.createElement("button", { onClick: onLogout, className: "p-2 text-gray-500 hover:text-red-600 transition-colors bg-gray-100 rounded-full hover:bg-red-50" }, /* @__PURE__ */ React.createElement(Icons.LogOut, null)))))), /* @__PURE__ */ React.createElement("div", { className: "flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full flex flex-col md:flex-row gap-8 overflow-hidden" }, /* @__PURE__ */ React.createElement("div", { className: "w-full md:w-64 flex-shrink-0 flex flex-row md:flex-col overflow-x-auto md:overflow-visible gap-2 pb-2 md:pb-0 hide-scrollbar" }, navItems.map((item) => /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        key: item.id,
+        onClick: () => setActiveTab(item.id),
+        className: `flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${activeTab === item.id ? "bg-indigo-600 text-white shadow-md" : "text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 hover:text-gray-900"}`
+      },
+      item.icon,
+      " ",
+      /* @__PURE__ */ React.createElement("span", null, item.label)
+    ))), /* @__PURE__ */ React.createElement("div", { className: "flex-1 bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden flex flex-col" }, /* @__PURE__ */ React.createElement("div", { className: "p-6 md:p-8 overflow-y-auto flex-1" }, activeTab === "overview" && /* @__PURE__ */ React.createElement(StudentOverview, { myActiveTransactions, componentsHeld }), activeTab === "issue" && /* @__PURE__ */ React.createElement(StudentIssue, { qrLoaded, components, user, db: db2, appId: appId2, showToast, setActiveTab }), activeTab === "return" && /* @__PURE__ */ React.createElement(StudentReturn, { qrLoaded, activeTransactions: myActiveTransactions, user, db: db2, appId: appId2, showToast, setActiveTab }), activeTab === "history" && /* @__PURE__ */ React.createElement(StudentHistory, { transactions: transactions.filter((t) => t.studentId === user.studentId) }), activeTab === "profile" && /* @__PURE__ */ React.createElement(StudentProfile, { user, db: db2, appId: appId2, showToast })))));
+  }
+  function StudentOverview({ myActiveTransactions, componentsHeld }) {
+    return /* @__PURE__ */ React.createElement("div", { className: "space-y-6" }, /* @__PURE__ */ React.createElement("h2", { className: "text-2xl font-bold text-gray-900 mb-6" }, "My Current Status"), /* @__PURE__ */ React.createElement("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-4 mb-8" }, /* @__PURE__ */ React.createElement("div", { className: "bg-indigo-50 border border-indigo-100 p-6 rounded-xl flex items-center justify-between" }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", { className: "text-indigo-900 font-medium text-sm mb-1" }, "Components Held"), /* @__PURE__ */ React.createElement("p", { className: "text-4xl font-bold text-indigo-700" }, componentsHeld)), /* @__PURE__ */ React.createElement("div", { className: "w-12 h-12 bg-indigo-200 text-indigo-700 rounded-full flex items-center justify-center" }, /* @__PURE__ */ React.createElement(Icons.Box, null))), /* @__PURE__ */ React.createElement("div", { className: "bg-emerald-50 border border-emerald-100 p-6 rounded-xl flex items-center justify-between" }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", { className: "text-emerald-900 font-medium text-sm mb-1" }, "Active Transactions"), /* @__PURE__ */ React.createElement("p", { className: "text-4xl font-bold text-emerald-700" }, myActiveTransactions.length)), /* @__PURE__ */ React.createElement("div", { className: "w-12 h-12 bg-emerald-200 text-emerald-700 rounded-full flex items-center justify-center" }, /* @__PURE__ */ React.createElement(Icons.ClipboardList, null)))), /* @__PURE__ */ React.createElement("h3", { className: "text-lg font-semibold text-gray-900 border-b pb-2" }, "Currently Issued Items"), myActiveTransactions.length === 0 ? /* @__PURE__ */ React.createElement("div", { className: "text-center py-10 bg-gray-50 rounded-lg border border-dashed border-gray-300 text-gray-500" }, "You don't have any components currently issued.") : /* @__PURE__ */ React.createElement("div", { className: "space-y-4" }, myActiveTransactions.map((t) => /* @__PURE__ */ React.createElement("div", { key: t.id, className: "bg-white border border-gray-200 p-4 rounded-lg shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4" }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h4", { className: "font-bold text-gray-900" }, t.componentName, " ", /* @__PURE__ */ React.createElement("span", { className: "text-xs font-normal text-gray-500 ml-2" }, "ID: ", t.componentId)), /* @__PURE__ */ React.createElement("p", { className: "text-sm text-gray-600 mt-1" }, "Issued on: ", new Date(t.issueTimestamp).toLocaleDateString(), " at ", new Date(t.issueTimestamp).toLocaleTimeString())), /* @__PURE__ */ React.createElement("div", { className: "bg-gray-100 px-4 py-2 rounded-md flex items-center gap-3 w-full md:w-auto justify-between" }, /* @__PURE__ */ React.createElement("span", { className: "text-xs text-gray-500 uppercase tracking-wider font-semibold" }, "Qty Holding"), /* @__PURE__ */ React.createElement("span", { className: "text-xl font-bold text-indigo-700" }, t.qtyIssued - t.qtyReturned))))));
+  }
+  function QrScanner({ onScan }) {
+    const [scanning, setScanning] = useState(false);
+    const onScanRef = useRef(onScan);
+    useEffect(() => {
+      onScanRef.current = onScan;
+    });
+    useEffect(() => {
+      let scanner = null;
+      const safeClear = () => {
+        if (!scanner) return;
+        try {
+          scanner.clear().catch(() => {
+          });
+        } catch (e) {
+        }
+      };
+      if (scanning) {
+        try {
+          scanner = new window.Html5QrcodeScanner("qr-reader", { fps: 10, qrbox: { width: 250, height: 250 }, aspectRatio: 1 });
+          scanner.render(
+            (decodedText) => {
+              safeClear();
+              setScanning(false);
+              onScanRef.current(decodedText);
+            },
+            (err) => {
+            }
+          );
+        } catch (e) {
+          console.error("Scanner init error:", e);
+        }
+      }
+      return () => safeClear();
+    }, [scanning]);
+    return /* @__PURE__ */ React.createElement("div", { className: "w-full flex flex-col items-center" }, !scanning ? /* @__PURE__ */ React.createElement("button", { onClick: () => setScanning(true), className: "bg-indigo-100 text-indigo-700 hover:bg-indigo-200 py-3 px-6 rounded-lg font-semibold flex items-center gap-2 shadow-sm transition-colors" }, /* @__PURE__ */ React.createElement(Icons.Camera, null), " Start QR Scanner") : /* @__PURE__ */ React.createElement("div", { className: "w-full max-w-sm rounded-lg overflow-hidden border-2 border-indigo-500 bg-black" }, /* @__PURE__ */ React.createElement("div", { id: "qr-reader", className: "w-full h-full text-white" }), /* @__PURE__ */ React.createElement("button", { onClick: () => setScanning(false), className: "w-full bg-red-600 text-white py-2 font-medium hover:bg-red-700" }, "Cancel Scan")));
+  }
+  function StudentIssue({ components, user, db: db2, appId: appId2, showToast, setActiveTab, qrLoaded }) {
+    const [step, setStep] = useState(1);
+    const [manualId, setManualId] = useState("");
+    const [searchTerm, setSearchTerm] = useState("");
+    const [selectedComp, setSelectedComp] = useState(null);
+    const [qty, setQty] = useState(1);
+    const availableComponents = components.filter((c) => c.availableQty > 0);
+    const filtered = availableComponents.filter((c) => c.name.toLowerCase().includes(searchTerm.toLowerCase()) || c.id.toLowerCase().includes(searchTerm.toLowerCase()));
+    const handleScan = (data) => {
+      if (data.trim().toLowerCase() === user.studentId.toLowerCase()) {
+        showToast("Identity verified successfully!");
+        setStep(2);
+      } else {
+        showToast("QR code does not match your registered Student ID.", "error");
+      }
+    };
+    const submitIssue = async () => {
+      const qtyNum = Number(qty);
+      if (!Number.isInteger(qtyNum) || qtyNum < 1) {
+        showToast("Please enter a valid quantity.", "error");
+        return;
+      }
+      if (qtyNum > selectedComp.availableQty) {
+        showToast("Requested quantity exceeds available stock.", "error");
+        return;
+      }
+      try {
+        const txId = `TX-${Date.now()}`;
+        const txRef = doc(db2, "artifacts", appId2, "public", "data", "luna_transactions", txId);
+        await setDoc(txRef, {
+          id: txId,
+          studentId: user.studentId,
+          studentName: user.name,
+          componentId: selectedComp.id,
+          componentName: selectedComp.name,
+          qtyIssued: qtyNum,
+          qtyReturned: 0,
+          issueTimestamp: (/* @__PURE__ */ new Date()).toISOString(),
+          returnTimestamp: null,
+          status: "ISSUED"
+        });
+        const compRef = doc(db2, "artifacts", appId2, "public", "data", "luna_components", selectedComp.id);
+        await updateDoc(compRef, { availableQty: increment(-qtyNum) });
+        showToast(`Successfully issued ${qtyNum}x ${selectedComp.name} from Drawer ${selectedComp.drawer}`);
+        setActiveTab("overview");
+      } catch (err) {
+        showToast("Error processing transaction.", "error");
+      }
+    };
+    if (step === 1) {
+      return /* @__PURE__ */ React.createElement("div", { className: "flex flex-col items-center justify-center h-full py-10 space-y-8 max-w-md mx-auto text-center" }, /* @__PURE__ */ React.createElement("div", { className: "w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-2" }, /* @__PURE__ */ React.createElement(Icons.User, null)), /* @__PURE__ */ React.createElement("h2", { className: "text-2xl font-bold" }, "Identity Verification"), /* @__PURE__ */ React.createElement("p", { className: "text-gray-500" }, "Please scan your registered Student ID QR code to access inventory."), qrLoaded && /* @__PURE__ */ React.createElement(QrScanner, { onScan: handleScan }), /* @__PURE__ */ React.createElement("div", { className: "w-full border-t border-gray-200 relative mt-8" }, /* @__PURE__ */ React.createElement("span", { className: "absolute left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-3 text-xs text-gray-400" }, "OR ENTER MANUALLY")), /* @__PURE__ */ React.createElement("form", { onSubmit: (e) => {
+        e.preventDefault();
+        handleScan(manualId);
+      }, className: "w-full flex space-x-2" }, /* @__PURE__ */ React.createElement("input", { type: "text", placeholder: "Enter your Student ID", required: true, value: manualId, onChange: (e) => setManualId(e.target.value), className: "flex-1 border border-gray-300 rounded-lg px-4 py-2 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" }), /* @__PURE__ */ React.createElement("button", { type: "submit", className: "bg-gray-800 text-white px-4 py-2 rounded-lg font-medium hover:bg-gray-900 transition-colors" }, "Verify")));
+    }
+    if (selectedComp) {
+      return /* @__PURE__ */ React.createElement("div", { className: "max-w-2xl mx-auto space-y-6" }, /* @__PURE__ */ React.createElement("button", { onClick: () => setSelectedComp(null), className: "text-sm font-medium text-indigo-600 hover:text-indigo-800 flex items-center mb-4" }, "\u2190 Back to selection"), /* @__PURE__ */ React.createElement("h2", { className: "text-2xl font-bold text-gray-900" }, "Confirm Issue"), /* @__PURE__ */ React.createElement("div", { className: "bg-gray-50 border border-gray-200 rounded-xl p-6 space-y-4" }, /* @__PURE__ */ React.createElement("div", { className: "flex justify-between border-b pb-4" }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", { className: "text-sm text-gray-500 uppercase tracking-wide" }, "Component"), /* @__PURE__ */ React.createElement("p", { className: "text-xl font-bold text-gray-900" }, selectedComp.name), /* @__PURE__ */ React.createElement("p", { className: "text-sm text-gray-600" }, "ID: ", selectedComp.id)), /* @__PURE__ */ React.createElement("div", { className: "text-right" }, /* @__PURE__ */ React.createElement("p", { className: "text-sm text-gray-500 uppercase tracking-wide" }, "Location"), /* @__PURE__ */ React.createElement("p", { className: "text-2xl font-mono font-bold text-indigo-700 bg-indigo-100 px-3 py-1 rounded-md inline-block" }, selectedComp.drawer))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", { className: "text-sm text-gray-500 mb-2" }, "Quantity to Issue (Max: ", selectedComp.availableQty, ")"), /* @__PURE__ */ React.createElement("div", { className: "flex items-center space-x-4" }, /* @__PURE__ */ React.createElement("input", { type: "number", min: "1", max: selectedComp.availableQty, value: qty, onChange: (e) => setQty(e.target.value), className: "w-24 text-center border-2 border-indigo-200 rounded-lg py-2 text-lg font-bold outline-none focus:border-indigo-600" }), /* @__PURE__ */ React.createElement("button", { onClick: submitIssue, className: "flex-1 bg-indigo-600 text-white py-3 rounded-lg font-bold hover:bg-indigo-700 shadow-md transition-colors text-lg" }, "Confirm Issue")))));
+    }
+    return /* @__PURE__ */ React.createElement("div", { className: "space-y-6 flex flex-col h-full" }, /* @__PURE__ */ React.createElement("h2", { className: "text-2xl font-bold text-gray-900" }, "Select Component to Issue"), /* @__PURE__ */ React.createElement("div", { className: "relative" }, /* @__PURE__ */ React.createElement("div", { className: "absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400" }, /* @__PURE__ */ React.createElement(Icons.Search, null)), /* @__PURE__ */ React.createElement("input", { type: "text", placeholder: "Search by name or ID...", value: searchTerm, onChange: (e) => setSearchTerm(e.target.value), className: "pl-10 w-full border border-gray-300 rounded-lg py-3 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" })), /* @__PURE__ */ React.createElement("div", { className: "flex-1 overflow-y-auto pr-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 content-start" }, filtered.map((comp) => /* @__PURE__ */ React.createElement("div", { key: comp.id, onClick: () => {
+      setSelectedComp(comp);
+      setQty(1);
+    }, className: "bg-white border border-gray-200 rounded-xl p-5 hover:border-indigo-500 hover:shadow-md cursor-pointer transition-all group flex flex-col" }, /* @__PURE__ */ React.createElement("div", { className: "flex-1" }, /* @__PURE__ */ React.createElement("h3", { className: "font-bold text-lg text-gray-900 group-hover:text-indigo-700 mb-1" }, comp.name), /* @__PURE__ */ React.createElement("p", { className: "text-xs text-gray-500 mb-3" }, comp.id, " \u2022 ", comp.category)), /* @__PURE__ */ React.createElement("div", { className: "flex justify-between items-end mt-4 pt-4 border-t border-gray-100" }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", { className: "text-[10px] text-gray-400 uppercase font-bold tracking-wider" }, "Available"), /* @__PURE__ */ React.createElement("p", { className: "font-bold text-emerald-600 text-lg leading-none" }, comp.availableQty)), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", { className: "text-[10px] text-gray-400 uppercase font-bold tracking-wider text-right" }, "Drawer"), /* @__PURE__ */ React.createElement("p", { className: "font-mono text-gray-700 text-sm leading-none bg-gray-100 px-2 py-1 rounded" }, comp.drawer))))), filtered.length === 0 && /* @__PURE__ */ React.createElement("div", { className: "col-span-full py-10 text-center text-gray-500" }, "No components available matching your search.")));
+  }
+  function StudentReturn({ activeTransactions, user, db: db2, appId: appId2, showToast, setActiveTab, qrLoaded }) {
+    const [step, setStep] = useState(1);
+    const [manualId, setManualId] = useState("");
+    const [selectedTx, setSelectedTx] = useState(null);
+    const [returnQty, setReturnQty] = useState(1);
+    const handleScan = (data) => {
+      if (data.trim().toLowerCase() === user.studentId.toLowerCase()) {
+        showToast("Identity verified. Select item to return.");
+        setStep(2);
+      } else {
+        showToast("QR code does not match your registered Student ID.", "error");
+      }
+    };
+    const submitReturn = async () => {
+      const qtyToReturnNum = Number(returnQty);
+      const maxReturnable = selectedTx.qtyIssued - selectedTx.qtyReturned;
+      if (!Number.isInteger(qtyToReturnNum) || qtyToReturnNum < 1) {
+        showToast("Please enter a valid quantity.", "error");
+        return;
+      }
+      if (qtyToReturnNum > maxReturnable) {
+        showToast("Cannot return more than issued.", "error");
+        return;
+      }
+      try {
+        const newReturnedTotal = selectedTx.qtyReturned + qtyToReturnNum;
+        const isComplete = newReturnedTotal >= selectedTx.qtyIssued;
+        const newStatus = isComplete ? "COMPLETED" : "PARTIALLY RETURNED";
+        const txRef = doc(db2, "artifacts", appId2, "public", "data", "luna_transactions", selectedTx.id);
+        await updateDoc(txRef, {
+          qtyReturned: newReturnedTotal,
+          status: newStatus,
+          returnTimestamp: isComplete ? (/* @__PURE__ */ new Date()).toISOString() : selectedTx.returnTimestamp
+        });
+        const compRef = doc(db2, "artifacts", appId2, "public", "data", "luna_components", selectedTx.componentId);
+        await updateDoc(compRef, { availableQty: increment(qtyToReturnNum) });
+        showToast(`Successfully returned ${qtyToReturnNum}x ${selectedTx.componentName}`);
+        setActiveTab("overview");
+      } catch (err) {
+        showToast("Error processing return.", "error");
+      }
+    };
+    if (step === 1) {
+      return /* @__PURE__ */ React.createElement("div", { className: "flex flex-col items-center justify-center h-full py-10 space-y-8 max-w-md mx-auto text-center" }, /* @__PURE__ */ React.createElement("div", { className: "w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-2" }, /* @__PURE__ */ React.createElement(Icons.Check, null)), /* @__PURE__ */ React.createElement("h2", { className: "text-2xl font-bold" }, "Return Verification"), /* @__PURE__ */ React.createElement("p", { className: "text-gray-500" }, "Please scan your registered Student ID QR code to begin the return process."), qrLoaded && /* @__PURE__ */ React.createElement(QrScanner, { onScan: handleScan }), /* @__PURE__ */ React.createElement("div", { className: "w-full border-t border-gray-200 relative mt-8" }, /* @__PURE__ */ React.createElement("span", { className: "absolute left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-3 text-xs text-gray-400" }, "OR ENTER MANUALLY")), /* @__PURE__ */ React.createElement("form", { onSubmit: (e) => {
+        e.preventDefault();
+        handleScan(manualId);
+      }, className: "w-full flex space-x-2" }, /* @__PURE__ */ React.createElement("input", { type: "text", placeholder: "Enter your Student ID", required: true, value: manualId, onChange: (e) => setManualId(e.target.value), className: "flex-1 border border-gray-300 rounded-lg px-4 py-2 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" }), /* @__PURE__ */ React.createElement("button", { type: "submit", className: "bg-gray-800 text-white px-4 py-2 rounded-lg font-medium hover:bg-gray-900 transition-colors" }, "Verify")));
+    }
+    if (selectedTx) {
+      const maxReturnable = selectedTx.qtyIssued - selectedTx.qtyReturned;
+      return /* @__PURE__ */ React.createElement("div", { className: "max-w-2xl mx-auto space-y-6" }, /* @__PURE__ */ React.createElement("button", { onClick: () => setSelectedTx(null), className: "text-sm font-medium text-indigo-600 hover:text-indigo-800 flex items-center mb-4" }, "\u2190 Back to selection"), /* @__PURE__ */ React.createElement("h2", { className: "text-2xl font-bold text-gray-900" }, "Confirm Return"), /* @__PURE__ */ React.createElement("div", { className: "bg-gray-50 border border-gray-200 rounded-xl p-6 space-y-4" }, /* @__PURE__ */ React.createElement("div", { className: "flex justify-between border-b pb-4" }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", { className: "text-sm text-gray-500 uppercase tracking-wide" }, "Component"), /* @__PURE__ */ React.createElement("p", { className: "text-xl font-bold text-gray-900" }, selectedTx.componentName), /* @__PURE__ */ React.createElement("p", { className: "text-sm text-gray-600" }, "Issued: ", new Date(selectedTx.issueTimestamp).toLocaleDateString()))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", { className: "text-sm text-gray-500 mb-2" }, "Quantity to Return (Max: ", maxReturnable, ")"), /* @__PURE__ */ React.createElement("div", { className: "flex items-center space-x-4" }, /* @__PURE__ */ React.createElement("input", { type: "number", min: "1", max: maxReturnable, value: returnQty, onChange: (e) => setReturnQty(e.target.value), className: "w-24 text-center border-2 border-emerald-200 rounded-lg py-2 text-lg font-bold outline-none focus:border-emerald-600" }), /* @__PURE__ */ React.createElement("button", { onClick: submitReturn, className: "flex-1 bg-emerald-600 text-white py-3 rounded-lg font-bold hover:bg-emerald-700 shadow-md transition-colors text-lg" }, "Confirm Return")))));
+    }
+    return /* @__PURE__ */ React.createElement("div", { className: "space-y-6" }, /* @__PURE__ */ React.createElement("h2", { className: "text-2xl font-bold text-gray-900" }, "Select Item to Return"), activeTransactions.length === 0 ? /* @__PURE__ */ React.createElement("div", { className: "text-center py-10 bg-gray-50 rounded-lg border border-dashed border-gray-300 text-gray-500" }, "You have no components to return.") : /* @__PURE__ */ React.createElement("div", { className: "grid grid-cols-1 lg:grid-cols-2 gap-4" }, activeTransactions.map((tx) => {
+      const holding = tx.qtyIssued - tx.qtyReturned;
+      return /* @__PURE__ */ React.createElement("div", { key: tx.id, onClick: () => {
+        setSelectedTx(tx);
+        setReturnQty(holding);
+      }, className: "bg-white border border-gray-200 rounded-xl p-5 hover:border-emerald-500 hover:shadow-md cursor-pointer transition-all flex justify-between items-center group" }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h3", { className: "font-bold text-gray-900 group-hover:text-emerald-700" }, tx.componentName), /* @__PURE__ */ React.createElement("p", { className: "text-xs text-gray-500 mt-1" }, "Issued: ", new Date(tx.issueTimestamp).toLocaleDateString())), /* @__PURE__ */ React.createElement("div", { className: "bg-gray-100 px-3 py-2 rounded text-center" }, /* @__PURE__ */ React.createElement("p", { className: "text-[10px] text-gray-500 uppercase font-bold" }, "Qty Holding"), /* @__PURE__ */ React.createElement("p", { className: "font-bold text-lg text-emerald-700" }, holding)));
+    })));
+  }
+  function StudentHistory({ transactions }) {
+    const sorted = [...transactions].sort((a, b) => new Date(b.issueTimestamp) - new Date(a.issueTimestamp));
+    return /* @__PURE__ */ React.createElement("div", { className: "space-y-6" }, /* @__PURE__ */ React.createElement("h2", { className: "text-2xl font-bold text-gray-900" }, "My Transaction History"), sorted.length === 0 ? /* @__PURE__ */ React.createElement("div", { className: "text-center py-10 text-gray-500" }, "No transactions found.") : /* @__PURE__ */ React.createElement("div", { className: "bg-white border border-gray-200 rounded-xl overflow-hidden" }, /* @__PURE__ */ React.createElement("table", { className: "min-w-full divide-y divide-gray-200" }, /* @__PURE__ */ React.createElement("thead", { className: "bg-gray-50" }, /* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("th", { className: "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" }, "Component"), /* @__PURE__ */ React.createElement("th", { className: "px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase" }, "Qty"), /* @__PURE__ */ React.createElement("th", { className: "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" }, "Issue Date"), /* @__PURE__ */ React.createElement("th", { className: "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" }, "Status"))), /* @__PURE__ */ React.createElement("tbody", { className: "bg-white divide-y divide-gray-200" }, sorted.map((t) => /* @__PURE__ */ React.createElement("tr", { key: t.id }, /* @__PURE__ */ React.createElement("td", { className: "px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" }, t.componentName), /* @__PURE__ */ React.createElement("td", { className: "px-6 py-4 whitespace-nowrap text-sm text-center text-gray-700" }, t.qtyIssued), /* @__PURE__ */ React.createElement("td", { className: "px-6 py-4 whitespace-nowrap text-sm text-gray-500" }, new Date(t.issueTimestamp).toLocaleDateString()), /* @__PURE__ */ React.createElement("td", { className: "px-6 py-4 whitespace-nowrap" }, /* @__PURE__ */ React.createElement("span", { className: `px-2 py-1 text-xs font-semibold rounded-full
+                          ${t.status === "COMPLETED" ? "bg-gray-100 text-gray-600" : t.status === "PARTIALLY RETURNED" ? "bg-blue-100 text-blue-800" : "bg-green-100 text-green-800"}` }, t.status))))))));
+  }
+  function StudentProfile({ user, db: db2, appId: appId2, showToast }) {
+    const [currentPwd, setCurrentPwd] = useState("");
+    const [newPwd, setNewPwd] = useState("");
+    const handleChangePassword = async (e) => {
+      e.preventDefault();
+      if (currentPwd !== user.password) {
+        showToast("Current password is incorrect.", "error");
+        return;
+      }
+      try {
+        const docRef = doc(db2, "artifacts", appId2, "public", "data", "luna_users", user.id);
+        await updateDoc(docRef, { password: newPwd });
+        showToast("Password updated successfully!");
+        setCurrentPwd("");
+        setNewPwd("");
+      } catch (err) {
+        showToast("Failed to update password.", "error");
+      }
+    };
+    return /* @__PURE__ */ React.createElement("div", { className: "max-w-md mx-auto space-y-6 pt-6" }, /* @__PURE__ */ React.createElement("h2", { className: "text-2xl font-bold text-gray-900 text-center" }, "Profile Settings"), /* @__PURE__ */ React.createElement("div", { className: "bg-gray-50 p-6 rounded-xl border border-gray-200 text-center mb-8" }, /* @__PURE__ */ React.createElement("div", { className: "w-20 h-20 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4" }, /* @__PURE__ */ React.createElement(Icons.User, null)), /* @__PURE__ */ React.createElement("h3", { className: "text-xl font-bold text-gray-900" }, user.name), /* @__PURE__ */ React.createElement("p", { className: "text-sm text-gray-500" }, user.email), /* @__PURE__ */ React.createElement("p", { className: "text-sm font-mono text-indigo-600 mt-2 bg-indigo-50 inline-block px-3 py-1 rounded" }, "ID: ", user.studentId)), /* @__PURE__ */ React.createElement("form", { onSubmit: handleChangePassword, className: "bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4" }, /* @__PURE__ */ React.createElement("h3", { className: "text-lg font-semibold text-gray-900 mb-2" }, "Change Password"), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "block text-sm font-medium text-gray-700 mb-1" }, "Current Password"), /* @__PURE__ */ React.createElement(
+      "input",
+      {
+        type: "password",
+        required: true,
+        value: currentPwd,
+        onChange: (e) => setCurrentPwd(e.target.value),
+        className: "w-full border border-gray-300 rounded-lg py-2 px-3 focus:ring-indigo-500 outline-none"
+      }
+    )), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "block text-sm font-medium text-gray-700 mb-1" }, "New Password"), /* @__PURE__ */ React.createElement(
+      "input",
+      {
+        type: "password",
+        required: true,
+        value: newPwd,
+        onChange: (e) => setNewPwd(e.target.value),
+        className: "w-full border border-gray-300 rounded-lg py-2 px-3 focus:ring-indigo-500 outline-none"
+      }
+    )), /* @__PURE__ */ React.createElement("button", { type: "submit", className: "w-full bg-indigo-600 text-white font-semibold py-2.5 rounded-lg hover:bg-indigo-700 transition-colors mt-2" }, "Update Password")));
+  }
+  class ErrorBoundary extends React.Component {
+    constructor(props) {
+      super(props);
+      this.state = { err: null };
+    }
+    static getDerivedStateFromError(err) {
+      return { err };
+    }
+    componentDidCatch(err) {
+      console.error("LUNA render error:", err);
+    }
+    render() {
+      if (this.state.err) {
+        return /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-center min-h-screen p-4" }, /* @__PURE__ */ React.createElement("div", { className: "bg-white p-8 rounded-xl shadow-xl w-full max-w-md border border-red-200 text-center" }, /* @__PURE__ */ React.createElement("h1", { className: "text-xl font-bold text-red-700 mb-2" }, "Something went wrong"), /* @__PURE__ */ React.createElement("p", { className: "text-sm text-gray-600 mb-4" }, String(this.state.err && this.state.err.message || this.state.err)), /* @__PURE__ */ React.createElement("button", { onClick: () => window.location.reload(), className: "bg-indigo-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-indigo-700" }, "Reload")));
+      }
+      return this.props.children;
+    }
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(/* @__PURE__ */ React.createElement(ErrorBoundary, null, /* @__PURE__ */ React.createElement(App, null)));
+})();
+
+      }
+    })();
+  </script>
+</body>
+</html>

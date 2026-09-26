@@ -1,0 +1,28 @@
+rules_version = '2';
+
+// LUNA (Laboratory User Navigation Assistant) — Firestore security rules
+//
+// How LUNA's login works: every visitor is silently signed in to Firebase
+// as an "anonymous" user the moment the page loads. LUNA then checks the
+// email/password they type against student/admin records stored in
+// Firestore itself. That means these rules can only require "is this
+// request coming from someone who has loaded the app" (request.auth !=
+// null) — they cannot tell a student apart from an admin, because both
+// share the same anonymous-auth mechanism. Real student-vs-admin
+// enforcement happens in the app's own code (LoginScreen), not here.
+//
+// What this DOES protect against: random scripts/bots on the open
+// internet hitting your database directly without ever loading the page.
+// What this does NOT protect against: anyone who opens your live site,
+// since they immediately get an anonymous auth token and satisfy
+// `request.auth != null` just like a real student would. See the
+// "Security notes" section of README.md for the tradeoffs and how to
+// harden this further later.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /artifacts/{appId}/public/data/{collection}/{docId} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}
