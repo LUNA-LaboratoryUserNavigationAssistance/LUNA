@@ -798,7 +798,7 @@
         const compRef = doc(db2, "artifacts", appId2, "public", "data", "luna_components", selectedTx.componentId);
         await updateDoc(compRef, { availableQty: increment(qtyToReturnNum) });
         showToast(`Successfully returned ${qtyToReturnNum}x ${selectedTx.componentName}`);
-        window.lunaSendToStm32(false, "RETURN " + selectedTx.componentId);
+        window.lunaSendToStm32(true, "RETURN " + selectedTx.componentId);
         setActiveTab("overview");
       } catch (err) {
         showToast("Error processing return.", "error");
