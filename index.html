@@ -90,7 +90,7 @@ window.lunaSendToStm32 = function (relayNumber, note) {
       })
         .then(function () { console.log("[LUNA->STM32] sent"); return true; })
         .catch(function (e) { console.warn("[LUNA->STM32] failed (blocked or unreachable)", e); return false; });
-    };
+    
   </script>
 
   <!-- Show any startup error on screen instead of a blank page -->
@@ -1023,5 +1023,6 @@ if (relayNumber > 0) {
   </script>
 </body>
 </html>
+
 
 
