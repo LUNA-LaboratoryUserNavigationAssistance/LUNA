@@ -80,16 +80,7 @@ window.lunaSendToStm32 = function (relayNumber, note) {
   var key = String(drawer || "").trim().toUpperCase();
   return mapping[key] || 0;
 };
-      console.log("[LUNA->STM32] " + (note || "") + " POST " + url + " " + body);
-      return fetch(url, {
-        method: "POST",
-        mode: "no-cors",
-        cache: "no-store",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: body
-      })
-        .then(function () { console.log("[LUNA->STM32] sent"); return true; })
-        .catch(function (e) { console.warn("[LUNA->STM32] failed (blocked or unreachable)", e); return false; });
+      
     
   </script>
 
