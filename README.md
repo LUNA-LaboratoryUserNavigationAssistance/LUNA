@@ -5,7 +5,7 @@ Do these steps in order, one at a time. Don't skip any.
 ## Your admin login (write this down somewhere safe)
 
 - **Username:** labadmin
-- **Password:** Luna#Lab2026!
+- **Password:** labadmin
 
 ---
 
