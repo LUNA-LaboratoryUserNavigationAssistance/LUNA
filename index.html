@@ -43,7 +43,7 @@ window.lunaSendToStm32 = function (relayNumber, note) {
     return Promise.resolve(false);
   }
 
-  var url = "https://" + String(window.LUNA_CONFIG.STM32_IP).trim() + "/";
+  var url = "http://" + String(window.LUNA_CONFIG.STM32_IP).trim() + "/";
   var body = "radio=" + relay;
 
   console.log(
